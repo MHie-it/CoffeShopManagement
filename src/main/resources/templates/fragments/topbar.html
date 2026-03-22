@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <header th:fragment="topbar (roleLabel)" class="topbar">
+    <div style="display:flex;align-items:center;gap:0.75rem">
+      <button type="button" class="menu-toggle" aria-label="Mở menu">☰ Menu</button>
+      <div class="topbar-title">
+        <h1 th:text="${pageTitle}">Tiêu đề</h1>
+        <p th:if="${pageSubtitle != null}" th:text="${pageSubtitle}">Mô tả ngắn</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span class="badge-role" th:text="${roleLabel}">Vai trò</span>
+    </div>
+  </header>
+</body>
+</html>

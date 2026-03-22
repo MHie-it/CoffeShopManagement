@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}">
+  <title>Nhân viên</title>
+</head>
+
+<body>
+  <div class="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar(${role}, ${navActive})}"></aside>
+    <div class="main-wrap">
+      <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
+      <main class="content">
+        <div class="grid grid-2" style="margin-bottom:1.25rem">
+          <div class="card">
+            <h2 style="margin-top:0">Tra cứu thành viên</h2>
+            <div class="form-group">
+              <label for="q">SĐT hoặc mã thẻ</label>
+              <input id="q" type="text" placeholder="09xx…">
+            </div>
+            <button type="button" class="btn btn-primary">Tìm</button>
+          </div>
+          <div class="card stat-card">
+            <div class="label">Khách chọn</div>
+            <div class="value" style="font-size:1.35rem">Nguyễn Hà</div>
+            <p class="muted" style="margin-top:0.75rem">Điểm hiện có: <strong style="color:var(--ink)">320</strong> · Hạng Bạc</p>
+            <div style="margin-top:1rem;display:flex;flex-wrap:wrap;gap:0.5rem">
+              <button type="button" class="btn btn-ghost">Tích điểm</button>
+              <button type="button" class="btn btn-primary">Đổi voucher</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>Thời gian</th>
+                  <th>Loại</th>
+                  <th>Điểm</th>
+                  <th>Ghi chú</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>21/03 14:20</td>
+                  <td>Tích điểm</td>
+                  <td style="color:var(--success);font-weight:600">+12</td>
+                  <td>Hóa đơn #8891</td>
+                </tr>
+                <tr>
+                  <td>15/03 09:05</td>
+                  <td>Đổi quà</td>
+                  <td style="color:var(--danger);font-weight:600">−100</td>
+                  <td>Voucher 50k</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

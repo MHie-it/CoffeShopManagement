@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}">
+  <title>Admin</title>
+</head>
+
+<body>
+  <div class="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar(${role}, ${navActive})}"></aside>
+    <div class="main-wrap">
+      <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
+      <main class="content">
+        <div class="card" style="margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;justify-content:space-between">
+          <p class="muted" style="margin:0">Quản lý tài khoản: tạo, khóa, gán vai trò.</p>
+          <button type="button" class="btn btn-primary">+ Tài khoản mới</button>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>Họ tên</th>
+                  <th>Email</th>
+                  <th>Vai trò</th>
+                  <th>Trạng thái</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Nguyễn Minh</td>
+                  <td>minh@demo.local</td>
+                  <td>Admin</td>
+                  <td><span style="color:var(--success);font-weight:600">Hoạt động</span></td>
+                  <td><a href="#">Sửa</a></td>
+                </tr>
+                <tr>
+                  <td>Trần Lan</td>
+                  <td>lan@demo.local</td>
+                  <td>Quản lý</td>
+                  <td><span style="color:var(--success);font-weight:600">Hoạt động</span></td>
+                  <td><a href="#">Sửa</a></td>
+                </tr>
+                <tr>
+                  <td>Lê An</td>
+                  <td>an@demo.local</td>
+                  <td>Nhân viên</td>
+                  <td><span style="color:var(--muted)">Đã khóa</span></td>
+                  <td><a href="#">Mở khóa</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

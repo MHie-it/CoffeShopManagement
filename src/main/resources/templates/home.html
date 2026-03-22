@@ -1,14 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<head th:replace="~{fragments/head :: head('Trang chủ')}">
+  <title>Trang chủ</title>
 </head>
 
 <body>
-    <h1> coffe shop</h1>
+  <header class="topbar" style="position:relative;background:rgba(255,253,249,0.9)">
+    <div class="topbar-title">
+      <h1 style="font-size:1.15rem">Aurora Café</h1>
+    </div>
+    <div class="topbar-actions">
+      <a class="btn btn-ghost" th:href="@{/login}">Đăng nhập</a>
+    </div>
+  </header>
+
+  <section class="landing-hero">
+    <h1>Hệ thống quản lý quán cà phê</h1>
+    <p class="lead">Giao diện đa trang Thymeleaf theo vai trò: quản trị, vận hành và phục vụ tại quầy.</p>
+  </section>
+
+  <div class="role-cards">
+    <a class="role-card admin" th:href="@{/admin}">
+      <span class="pill">Admin</span>
+      <h2>Toàn quyền hệ thống</h2>
+      <p>Thống kê doanh thu, phân quyền RBAC và nhật ký kiểm toán.</p>
+      <div class="cta">Vào bảng điều khiển →</div>
+    </a>
+    <a class="role-card manager" th:href="@{/manager/inventory}">
+      <span class="pill">Quản lý</span>
+      <h2>Vận hành &amp; nhân sự</h2>
+      <p>Kho, nhân viên, chấm công, menu và sơ đồ bàn.</p>
+      <div class="cta">Mở module quản lý →</div>
+    </a>
+    <a class="role-card staff" th:href="@{/staff/clock}">
+      <span class="pill">Nhân viên</span>
+      <h2>Phục vụ tại quầy</h2>
+      <p>Chấm công, đơn theo bàn, thành viên và thanh toán MoMo.</p>
+      <div class="cta">Vào POS nhân viên →</div>
+    </a>
+  </div>
+
+  <p class="landing-footer">
+    <a th:href="@{/login}">Đăng nhập</a>
+    · Aurora Café · Thymeleaf
+  </p>
+  <script th:src="@{/js/app.js}"></script>
 </body>
 
 </html>

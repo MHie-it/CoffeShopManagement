@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}">
+  <title>Quản lý</title>
+</head>
+
+<body>
+  <div class="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar(${role}, ${navActive})}"></aside>
+    <div class="main-wrap">
+      <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
+      <main class="content">
+        <div class="card" style="margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:space-between;align-items:center">
+          <p class="muted" style="margin:0">Danh mục, giá, ảnh món — CRUD khi có API.</p>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <button type="button" class="btn btn-ghost">Danh mục</button>
+            <button type="button" class="btn btn-primary">+ Món mới</button>
+          </div>
+        </div>
+        <div class="grid grid-3">
+          <div class="card">
+            <div style="aspect-ratio:4/3;background:var(--surface-2);border-radius:10px;margin-bottom:0.85rem;border:1px solid var(--border)"></div>
+            <h3 style="margin:0 0 0.25rem;font-size:1rem">Phin sữa đá</h3>
+            <p class="muted" style="font-size:0.85rem;margin:0 0 0.5rem">Cà phê · Best seller</p>
+            <p style="margin:0;font-weight:700;color:var(--accent)">29.000 ₫</p>
+          </div>
+          <div class="card">
+            <div style="aspect-ratio:4/3;background:var(--surface-2);border-radius:10px;margin-bottom:0.85rem;border:1px solid var(--border)"></div>
+            <h3 style="margin:0 0 0.25rem;font-size:1rem">Americano</h3>
+            <p class="muted" style="font-size:0.85rem;margin:0 0 0.5rem">Cà phê</p>
+            <p style="margin:0;font-weight:700;color:var(--accent)">35.000 ₫</p>
+          </div>
+          <div class="card">
+            <div style="aspect-ratio:4/3;background:var(--surface-2);border-radius:10px;margin-bottom:0.85rem;border:1px solid var(--border)"></div>
+            <h3 style="margin:0 0 0.25rem;font-size:1rem">Trà đào cam sả</h3>
+            <p class="muted" style="font-size:0.85rem;margin:0 0 0.5rem">Trà</p>
+            <p style="margin:0;font-weight:700;color:var(--accent)">42.000 ₫</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

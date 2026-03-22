@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}">
+  <title>Nhân viên</title>
+</head>
+
+<body>
+  <div class="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar(${role}, ${navActive})}"></aside>
+    <div class="main-wrap">
+      <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
+      <main class="content">
+        <div class="grid grid-2">
+          <div class="card">
+            <h2 style="margin-top:0">Chọn bàn</h2>
+            <div class="table-floor" style="max-width:100%">
+              <div class="table-tile busy">B2<span>Đang mở</span></div>
+              <div class="table-tile free">B3<span>Trống</span></div>
+              <div class="table-tile free">B5<span>Trống</span></div>
+            </div>
+            <button type="button" class="btn btn-primary" style="margin-top:1rem;width:100%">Tạo đơn mới</button>
+          </div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+              <h2 style="margin:0">Đơn bàn B2</h2>
+              <span class="badge-role" style="background:rgba(188,108,37,0.15);color:var(--warning)">Chưa thanh toán</span>
+            </div>
+            <div class="table-wrap" style="margin-bottom:1rem">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>Món</th>
+                    <th>SL</th>
+                    <th>Giá</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Phin sữa đá</td>
+                    <td>2</td>
+                    <td>58.000 ₫</td>
+                  </tr>
+                  <tr>
+                    <td>Bánh croissant</td>
+                    <td>1</td>
+                    <td>28.000 ₫</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-weight:700;margin-bottom:1rem">
+              <span>Tạm tính</span>
+              <span>86.000 ₫</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+              <button type="button" class="btn btn-ghost">Sửa đơn</button>
+              <button type="button" class="btn btn-ghost">Hủy đơn</button>
+              <button type="button" class="btn btn-primary">In tạm / PDF</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>
