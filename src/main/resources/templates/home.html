@@ -1,14 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>CoffeeGay - Shop Management</title>
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☕</text></svg>">
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../static/css/style.css">
 </head>
 
 <body>
-    <h1> coffe shop</h1>
+    <!-- Navigation Navbar -->
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">
+            <i class="fa-solid fa-mug-hot"></i> CoffeeGay
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#about">About Us</a></li>
+        </ul>
+        <div class="nav-actions">
+            <!-- Unauthenticated State -->
+            <th:block sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="btn btn-login">Log In</a>
+                <a th:href="@{/register}" class="btn btn-register">Sign Up</a>
+            </th:block>
+
+            <!-- Authenticated State -->
+            <th:block sec:authorize="isAuthenticated()">
+                <span class="user-greeting" style="margin-right: 15px; font-weight: 500; color: #5a3a22;">
+                    <i class="fa-regular fa-circle-user"></i> Hello, <span sec:authentication="name">User</span>!
+                </span>
+                <form th:action="@{/logout}" method="post" style="display: inline; margin: 0;">
+                    <button type="submit" class="btn btn-login"
+                        style="cursor: pointer; border: none; font-family: 'Poppins', sans-serif;">Log out</button>
+                </form>
+            </th:block>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="home" class="hero">
+        <div class="hero-content">
+            <h1>Experience The Perfect Blend</h1>
+            <p>Manage your coffee shop effortlessly and serve your customers with love. The ultimate management solution
+                tailored for cafe owners.</p>
+            <a th:href="@{/menu}" href="#menu" class="btn-primary">Explore Our Menu <i class="fa-solid fa-arrow-right"
+                    style="margin-left: 8px;"></i></a>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <h2 class="section-title">Why Choose CoffeeBrew?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fa-solid fa-seedling feature-icon"></i>
+                <h3>Premium Beans</h3>
+                <p>We source only the finest, 100% organic beans directly from ethical farmers around the globe.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-clock feature-icon"></i>
+                <h3>Fast & Fresh</h3>
+                <p>Our quick management system ensures every cup is brewed fresh and served exactly when you need it.
+                </p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-bell-concierge feature-icon"></i>
+                <h3>Seamless Service</h3>
+                <p>An intuitive Point of Sale interface designed to make taking orders faster and more accurate.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2026</span> CoffeeBrew Management System. All
+            rights reserved.</p>
+    </footer>
+
 </body>
 
 </html>

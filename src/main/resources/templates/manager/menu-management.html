@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Management - CoffeeBrew Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #D2691E;
+            --bg-color: #f4f7f6;
+            --sidebar-color: #2c3e50;
+            --text-color: #333;
+            --card-bg: #fff;
+        }
+        body { font-family: 'Poppins', sans-serif; margin: 0; display: flex; background: var(--bg-color); color: var(--text-color); }
+        .sidebar { width: 250px; background: var(--sidebar-color); color: white; height: 100vh; padding-top: 20px; position: fixed; }
+        .sidebar h2 { text-align: center; font-size: 24px; margin-bottom: 30px; letter-spacing: 1px; color: #f39c12; }
+        .sidebar a { display: block; padding: 15px 25px; color: #bdc3c7; text-decoration: none; font-size: 16px; transition: 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background: #34495e; color: white; border-left: 4px solid #f39c12; }
+        .sidebar i { margin-right: 10px; width: 20px; text-align: center; }
+        .content { margin-left: 250px; padding: 30px; width: 100%; box-sizing: border-box; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; color: var(--primary-color); }
+        .card { background: var(--card-bg); border-radius: 10px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .card h3 { margin-top: 0; color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; color: #555; text-transform: uppercase; font-size: 14px; }
+        tr:hover { background-color: #f1f3f5; }
+        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.3s; }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: #6b3410; }
+        .btn-danger { background: #e74c3c; color: white; padding: 5px 10px; font-size: 12px; }
+        .btn-danger:hover { background: #c0392b; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: 'Poppins', sans-serif; box-sizing: border-box; }
+        .form-row { display: flex; gap: 15px; }
+        .form-col { flex: 1; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #2ecc71; color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2><i class="fa-solid fa-mug-hot"></i> Admin</h2>
+        <a href="/" ><i class="fa-solid fa-home"></i> Trở về Shop</a>
+        <a href="/manager/menu" class="active"><i class="fa-solid fa-utensils"></i> Quản lý Menu</a>
+        <a href="/manager/tables"><i class="fa-solid fa-chair"></i> Sơ đồ Bàn</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="header">
+            <h1>Quản lý Thực Đơn (Menu)</h1>
+        </div>
+
+        <div class="form-row">
+            <!-- Add Category Card -->
+            <div class="form-col">
+                <div class="card">
+                    <h3><i class="fa-solid fa-folder-plus"></i> Thêm Danh Mục</h3>
+                    <form th:action="@{/manager/menu/category/add}" th:object="${newCategory}" method="post">
+                        <div class="form-group">
+                            <label>Tên danh mục (Category Name)</label>
+                            <input type="text" th:field="*{name}" class="form-control" required placeholder="Ví dụ: Cà Phê, Trà Sữa...">
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm Danh Mục</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Add Menu Item Card -->
+            <div class="form-col" style="flex: 2;">
+                <div class="card">
+                    <h3><i class="fa-solid fa-coffee"></i> Thêm Món Mới</h3>
+                    <form th:action="@{/manager/menu/add}" th:object="${newMenuItem}" method="post">
+                        <div class="form-row">
+                            <div class="form-group form-col">
+                                <label>Tên món</label>
+                                <input type="text" th:field="*{name}" class="form-control" required>
+                            </div>
+                            <div class="form-group form-col">
+                                <label>Giá tiền (VNĐ)</label>
+                                <input type="number" th:field="*{price}" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group form-col">
+                                <label>Danh mục</label>
+                                <select th:field="*{category}" class="form-control" required>
+                                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group form-col">
+                                <label>Link Ảnh (URL)</label>
+                                <input type="text" th:field="*{imageUrl}" class="form-control" placeholder="https://...">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Mô tả ngắn</label>
+                            <textarea th:field="*{description}" class="form-control" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm Món</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu List Table -->
+        <div class="card">
+            <h3><i class="fa-solid fa-list"></i> Danh Sách Món Uống</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Tên Món</th>
+                        <th>Danh Mục</th>
+                        <th>Giá (VNĐ)</th>
+                        <th>Trạng Thái</th>
+                        <th>Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${menuItems}">
+                        <td><img th:src="${item.imageUrl}" onError="this.src='https://via.placeholder.com/50x50?text=No+Img'" style="width: 50px; height: 50px; border-radius: 5px; object-fit: cover;"></td>
+                        <td th:text="${item.name}">Cà Phê Sữa</td>
+                        <td th:text="${item.category != null ? item.category.name : 'Unknown'}">Cà Phê</td>
+                        <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">25,000 ₫</td>
+                        <td><span class="badge badge-success">Đang Bán</span></td>
+                        <td>
+                            <form th:action="@{/manager/menu/delete/{id}(id=${item.id})}" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa món này?');">
+                                <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(menuItems)}">
+                        <td colspan="6" style="text-align: center; color: #888;">Chưa có món uống nào trong thực đơn.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+</html>

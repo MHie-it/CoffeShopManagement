@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CoffeeBrew</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #f4e8d8; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-container { background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .auth-title { font-family: 'Playfair Display', serif; color: #8c5a35; font-size: 2rem; margin-bottom: 0.5rem; }
+        .form-group { margin-bottom: 1.5rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
+        .form-group input { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; outline: none; transition: border 0.3s; font-family: inherit; box-sizing: border-box;}
+        .form-group input:focus { border-color: #8c5a35; }
+        .btn-auth { width: 100%; padding: 1rem; background-color: #8c5a35; color: #fff; border: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: background 0.3s; }
+        .btn-auth:hover { background-color: #714628; }
+        .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
+        .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .auth-links { margin-top: 1.5rem; font-size: 0.9rem; }
+        .auth-links a { color: #8c5a35; text-decoration: none; font-weight: 500; }
+        .auth-links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2 class="auth-title">Welcome Back</h2>
+        <p style="color: #666; margin-bottom: 2rem;">Sign in to CoffeeBrew Management</p>
+
+        <div th:if="${param.error}" class="alert alert-error">
+            Invalid username or password.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success">
+            You have been logged out successfully.
+        </div>
+        <div th:if="${param.registered}" class="alert alert-success">
+            Registration successful! Please login.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn-auth">Sign In</button>
+        </form>
+        
+        <div class="auth-links">
+            Don't have an account? <a th:href="@{/register}">Sign up here</a>
+            <br><br>
+            <a th:href="@{/}">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

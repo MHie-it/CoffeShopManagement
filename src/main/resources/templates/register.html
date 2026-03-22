@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - CoffeeBrew</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #f4e8d8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 2rem 0; box-sizing: border-box;}
+        .auth-container { background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
+        .auth-title { font-family: 'Playfair Display', serif; color: #8c5a35; font-size: 2rem; margin-bottom: 0.5rem; }
+        .form-group { margin-bottom: 1.2rem; text-align: left; }
+        .form-group label { display: block; margin-bottom: 0.4rem; color: #333; font-weight: 500; }
+        .form-group input { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; outline: none; transition: border 0.3s; font-family: inherit; box-sizing: border-box; }
+        .form-group input:focus { border-color: #8c5a35; }
+        .btn-auth { width: 100%; padding: 1rem; background-color: #8c5a35; color: #fff; border: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: background 0.3s; margin-top: 1rem; }
+        .btn-auth:hover { background-color: #714628; }
+        .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
+        .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .auth-links { margin-top: 1.5rem; font-size: 0.9rem; }
+        .auth-links a { color: #8c5a35; text-decoration: none; font-weight: 500; }
+        .auth-links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2 class="auth-title">Join CoffeeBrew</h2>
+        <p style="color: #666; margin-bottom: 2rem;">Create your staff account</p>
+
+        <div th:if="${error}" class="alert alert-error">
+            <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/register}" th:object="${user}" method="post">
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" th:field="*{fullName}" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" th:field="*{email}" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" th:field="*{username}" required minlength="4">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" th:field="*{password}" required minlength="6">
+            </div>
+            <button type="submit" class="btn-auth">Create Account</button>
+        </form>
+        
+        <div class="auth-links">
+            Already have an account? <a th:href="@{/login}">Sign in here</a>
+            <br><br>
+            <a th:href="@{/}">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

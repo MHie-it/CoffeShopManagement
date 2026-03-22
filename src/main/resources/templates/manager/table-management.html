@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Layout - CoffeeBrew Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #D2691E;
+            --bg-color: #f4f7f6;
+            --sidebar-color: #2c3e50;
+            --text-color: #333;
+            --card-bg: #fff;
+        }
+        body { font-family: 'Poppins', sans-serif; margin: 0; display: flex; background: var(--bg-color); color: var(--text-color); }
+        .sidebar { width: 250px; background: var(--sidebar-color); color: white; height: 100vh; padding-top: 20px; position: fixed; }
+        .sidebar h2 { text-align: center; font-size: 24px; margin-bottom: 30px; letter-spacing: 1px; color: #f39c12; }
+        .sidebar a { display: block; padding: 15px 25px; color: #bdc3c7; text-decoration: none; font-size: 16px; transition: 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background: #34495e; color: white; border-left: 4px solid #f39c12; }
+        .sidebar i { margin-right: 10px; width: 20px; text-align: center; }
+        .content { margin-left: 250px; padding: 30px; width: 100%; box-sizing: border-box; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; color: var(--primary-color); }
+        .card { background: var(--card-bg); border-radius: 10px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .card h3 { margin-top: 0; color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        
+        /* Table Grid Styles */
+        .table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .table-box { position: relative; background: #fff; border: 2px solid #ddd; border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px; }
+        .table-box:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .table-icon { font-size: 40px; margin-bottom: 15px; color: #888; }
+        .table-name { font-size: 18px; font-weight: 600; margin-bottom: 5px; }
+        .table-capacity { font-size: 12px; color: #7f8c8d; margin-bottom: 10px; }
+        
+        /* Status Colors */
+        .status-empty { border-color: #2ecc71; background-color: #f2fcf5; }
+        .status-empty .table-icon { color: #2ecc71; }
+        
+        .status-occupied { border-color: #e74c3c; background-color: #fdf3f2; }
+        .status-occupied .table-icon { color: #e74c3c; }
+        
+        .status-reserved { border-color: #f39c12; background-color: #fef9f1; }
+        .status-reserved .table-icon { color: #f39c12; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: 'Poppins', sans-serif; box-sizing: border-box; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.3s; }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: #6b3410; }
+        .btn-danger { background: #e74c3c; color: white; padding: 5px 10px; font-size: 12px; position: absolute; top: 10px; right: 10px;}
+        .btn-danger:hover { background: #c0392b; }
+
+        .status-select { margin-top: 10px; padding: 5px; border-radius: 5px; border: 1px solid #ccc; font-size: 12px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2><i class="fa-solid fa-mug-hot"></i> Admin</h2>
+        <a href="/" ><i class="fa-solid fa-home"></i> Trở về Shop</a>
+        <a href="/manager/menu"><i class="fa-solid fa-utensils"></i> Quản lý Menu</a>
+        <a href="/manager/tables" class="active"><i class="fa-solid fa-chair"></i> Sơ đồ Bàn</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="header">
+            <h1>Quản lý Sơ đồ Bàn</h1>
+        </div>
+
+        <!-- Add Table Form -->
+        <div class="card" style="max-width: 600px; margin: 0 auto 30px auto;">
+            <h3><i class="fa-solid fa-plus-circle"></i> Thêm Bàn Mới</h3>
+            <form th:action="@{/manager/tables/add}" th:object="${newTable}" method="post" style="display: flex; gap: 15px; align-items: flex-end;">
+                <div class="form-group" style="flex: 2; margin-bottom: 0;">
+                    <label>Tên / Số Bàn</label>
+                    <input type="text" th:field="*{name}" class="form-control" placeholder="Ví dụ: Bàn 01, VIP 1..." required>
+                </div>
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label>Số Ghế</label>
+                    <input type="number" th:field="*{capacity}" class="form-control" value="4" required>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tạo</button>
+            </form>
+        </div>
+
+        <!-- Tables Grid -->
+        <div class="table-grid">
+            <div th:each="table : ${tables}" class="table-box" th:classappend="'status-' + ${#strings.toLowerCase(table.status)}">
+                <form th:action="@{/manager/tables/delete/{id}(id=${table.id})}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bàn này?');">
+                    <button type="submit" class="btn-danger" title="Xóa bàn"><i class="fa-solid fa-times"></i></button>
+                </form>
+
+                <i th:if="${#strings.toString(table.status) == 'empty'}" class="fa-solid fa-chair table-icon"></i>
+                <i th:if="${#strings.toString(table.status) == 'occupied'}" class="fa-solid fa-users table-icon"></i>
+                <i th:if="${#strings.toString(table.status) == 'reserved'}" class="fa-solid fa-clock table-icon"></i>
+                
+                <div class="table-name" th:text="${table.name}">Bàn 01</div>
+                <div class="table-capacity"><i class="fa-solid fa-user"></i> <span th:text="${table.capacity}"> 4 Người</span></div>
+                
+                <form th:action="@{/manager/tables/update-status/{id}(id=${table.id})}" method="post" style="width: 100%;">
+                    <select name="status" class="status-select" onchange="this.form.submit()">
+                        <option th:each="st : ${statuses}" 
+                                th:value="${st}" 
+                                th:text="${st}" 
+                                th:selected="${st == table.status}">
+                        </option>
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(tables)}" style="text-align: center; color: #888; padding: 50px;">
+            <i class="fa-solid fa-chair" style="font-size: 50px; margin-bottom: 20px; color: #ccc;"></i>
+            <p>Chưa có sơ đồ bàn nào được thiết lập. Vui lòng thêm bàn mới ở phía trên.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
