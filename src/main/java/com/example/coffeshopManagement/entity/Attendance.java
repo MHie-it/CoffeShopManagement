@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(
 		name = "attendance",
-		uniqueConstraints = @UniqueConstraint(name = "uq_attendance", columnNames = {"user_id", "work_date"})
+		uniqueConstraints = @UniqueConstraint(name = "uq_attendance", columnNames = {"employee_id", "work_date"})
 )
 @Getter
 @Setter
@@ -24,8 +24,8 @@ public class Attendance {
 	private Integer id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+	@JoinColumn(name = "employee_id", nullable = false)
+	private Employee employee;
 
 	@Column(name = "work_date", nullable = false)
 	private LocalDate workDate;
@@ -36,7 +36,7 @@ public class Attendance {
 	@Column(name = "check_out")
 	private LocalDateTime checkOut;
 
-	@Column(name = "hours_worked", insertable = false, updatable = false, precision = 4, scale = 2)
+	@Column(name = "hours_worked", precision = 4, scale = 2)
 	private BigDecimal hoursWorked;
 
 	@Column(columnDefinition = "TEXT")
