@@ -97,6 +97,7 @@ public class InventoryService {
         return toIngredientResponse(savedIngredient);
     }
 
+    @Transactional(readOnly = true)
     public List<InventoryLogResponse> getInventoryLogs(Instant from, Instant to, Integer ingredientId) {
         List<InventoryLog> logs;
         if (ingredientId != null) {
@@ -106,7 +107,14 @@ public class InventoryService {
         } else {
             logs = inventoryLogRepository.findAll();
         }
-        return logs.stream().map(this::toInventoryLogResponse).toList();
+        return logs.stream()
+                .sorted((a, b) -> {
+                    Instant aTime = a.getCreatedAt() == null ? Instant.EPOCH : a.getCreatedAt();
+                    Instant bTime = b.getCreatedAt() == null ? Instant.EPOCH : b.getCreatedAt();
+                    return bTime.compareTo(aTime);
+                })
+                .map(this::toInventoryLogResponse)
+                .toList();
     }
 
     private boolean isLowStock(Ingredient ingredient) {
@@ -129,12 +137,12 @@ public class InventoryService {
     private InventoryLogResponse toInventoryLogResponse(InventoryLog log) {
         InventoryLogResponse response = new InventoryLogResponse();
         response.setId(log.getId());
-        response.setIngredientId(log.getIngredient().getId());
-        response.setIngredientName(log.getIngredient().getName());
+        response.setIngredientId(log.getIngredient() != null ? log.getIngredient().getId() : null);
+        response.setIngredientName(log.getIngredient() != null ? log.getIngredient().getName() : null);
         response.setType(log.getType());
         response.setQuantity(log.getQuantity());
         response.setNote(log.getNote());
-        response.setUsername(log.getUser().getUsername());
+        response.setUsername(log.getUser() != null ? log.getUser().getUsername() : null);
         response.setCreatedAt(log.getCreatedAt());
         return response;
     }

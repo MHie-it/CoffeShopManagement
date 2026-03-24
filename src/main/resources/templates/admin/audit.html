@@ -12,18 +12,32 @@
     <div class="main-wrap">
       <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
       <main class="content">
-        <div class="grid grid-3" style="margin-bottom:1.25rem">
-          <div class="card">
-            <label class="muted" style="font-size:0.78rem;font-weight:600;display:block;margin-bottom:0.35rem">Từ ngày</label>
-            <input type="date" style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--border)">
-          </div>
-          <div class="card">
-            <label class="muted" style="font-size:0.78rem;font-weight:600;display:block;margin-bottom:0.35rem">Đến ngày</label>
-            <input type="date" style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--border)">
-          </div>
-          <div class="card" style="display:flex;align-items:flex-end">
-            <button type="button" class="btn btn-primary" style="width:100%">Lọc</button>
-          </div>
+        <div class="card" style="margin-bottom:1.25rem">
+          <form id="adminAuditFilterForm" style="display:grid;gap:0.75rem">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0.75rem">
+              <label class="form-row">
+                <span>Từ ngày</span>
+                <input id="adminAuditFromDate" type="date">
+              </label>
+              <label class="form-row">
+                <span>Đến ngày</span>
+                <input id="adminAuditToDate" type="date">
+              </label>
+              <label class="form-row">
+                <span>Hành động</span>
+                <input id="adminAuditAction" maxlength="100" placeholder="LOGIN, EMPLOYEE_UPDATE...">
+              </label>
+              <label class="form-row">
+                <span>Username</span>
+                <input id="adminAuditUsername" maxlength="50" placeholder="admin">
+              </label>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+              <button type="submit" class="btn btn-primary">Lọc</button>
+              <button id="adminAuditClearBtn" type="button" class="btn btn-ghost">Xóa bộ lọc</button>
+            </div>
+            <p id="adminAuditMessage" class="form-inline-message" aria-live="polite"></p>
+          </form>
         </div>
         <div class="card" style="padding:0;overflow:hidden">
           <div class="table-wrap">
@@ -33,33 +47,16 @@
                   <th>Thời gian</th>
                   <th>Người dùng</th>
                   <th>Hành động</th>
+                  <th>Bảng</th>
                   <th>Chi tiết</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>22/03/2025 09:12</td>
-                  <td>minh@demo.local</td>
-                  <td>LOGIN</td>
-                  <td>IP 192.168.1.10</td>
-                </tr>
-                <tr>
-                  <td>22/03/2025 09:45</td>
-                  <td>lan@demo.local</td>
-                  <td>UPDATE_MENU</td>
-                  <td>menu_item_id=12</td>
-                </tr>
-                <tr>
-                  <td>22/03/2025 10:02</td>
-                  <td>an@demo.local</td>
-                  <td>CREATE_ORDER</td>
-                  <td>order_id=9001</td>
-                </tr>
+              <tbody id="adminAuditBody">
+                <tr><td colspan="5" class="muted">Đang tải nhật ký...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
-        <p class="muted" style="margin-top:1rem;font-size:0.88rem">Map entity <code style="background:var(--surface-2);padding:0.1rem 0.35rem;border-radius:4px">AuditLog</code> khi có repository.</p>
       </main>
     </div>
   </div>

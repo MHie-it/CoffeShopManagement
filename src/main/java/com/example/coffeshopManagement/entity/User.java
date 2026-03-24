@@ -13,8 +13,11 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String password;
+
+    @Column(name = "password", nullable = false)
+    private String legacyPassword;
 
     @Column(nullable = false)
     private String fullName;
@@ -27,6 +30,9 @@ public class User {
     
     @Column(nullable = false)
     private boolean active = true;
+
+    @Column(name = "role_id")
+    private Integer roleId;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -45,7 +51,13 @@ public class User {
     public void setUsername(String username) { this.username = username; }
 
     public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public void setPassword(String password) {
+        this.password = password;
+        this.legacyPassword = password;
+    }
+
+    public String getLegacyPassword() { return legacyPassword; }
+    public void setLegacyPassword(String legacyPassword) { this.legacyPassword = legacyPassword; }
 
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
@@ -58,6 +70,9 @@ public class User {
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+
+    public Integer getRoleId() { return roleId; }
+    public void setRoleId(Integer roleId) { this.roleId = roleId; }
 
     public Set<Role> getRoles() { return roles; }
     public void setRoles(Set<Role> roles) { this.roles = roles; }

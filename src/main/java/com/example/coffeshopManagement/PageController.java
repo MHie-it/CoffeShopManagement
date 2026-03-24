@@ -115,7 +115,7 @@ public class PageController {
 				return "/admin";
 			}
 			if ("ROLE_MANAGER".equals(role)) {
-				return "/manager/inventory";
+				return "/manager";
 			}
 			if ("ROLE_STAFF".equals(role)) {
 				return "/staff/clock";
@@ -151,6 +151,13 @@ public class PageController {
 		addShell(model, "MANAGER", "inventory", "Quản lý", "Nhập hàng & tồn kho",
 				"Cảnh báo nguyên liệu sắp hết — dữ liệu demo.");
 		return "manager/inventory";
+	}
+
+	@GetMapping("/manager")
+	public String managerDashboard(Model model) {
+		addShell(model, "MANAGER", "dashboard", "Quản lý", "Tổng quan vận hành",
+				"Theo dõi nhân sự, kho và bán hàng theo ca trong ngày.");
+		return "manager/dashboard";
 	}
 
 	@GetMapping("/manager/employees")

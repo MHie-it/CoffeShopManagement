@@ -16,6 +16,8 @@ import java.util.List;
 
 @Service
 public class OrderService {
+    private static final List<OrderStatus> OPEN_ORDER_STATUSES = List.of(OrderStatus.pending, OrderStatus.serving);
+
     private final ShopOrderRepository shopOrderRepository;
     private final OrderItemRepository orderItemRepository;
     private final TableEntityRepository tableEntityRepository;
@@ -54,28 +56,65 @@ public class OrderService {
     public OrderResponse createOrder(CreateOrderRequest request, String username) {
         TableEntity table = tableEntityRepository.findById(request.getTableId())
                 .orElseThrow(() -> new ResourceNotFoundException("Table not found"));
+        if (table.getStatus() != TableStatus.empty) {
+            throw new BadRequestException("Table is not available for new order");
+        }
+        if (shopOrderRepository.existsByTableIdAndStatusIn(
+                table.getId(),
+                List.of(OrderStatus.pending, OrderStatus.serving))) {
+            throw new BadRequestException("Table already has an open order");
+        }
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseGet(() -> userRepository.findByEmail(username)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found")));
 
         ShopOrder order = new ShopOrder();
         order.setTable(table);
         order.setUser(user);
         order.setStatus(OrderStatus.pending);
         if (request.getCustomerId() != null) {
-            Customer customer = customerRepository.findById(request.getCustomerId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
-            order.setCustomer(customer);
+            if (request.getCustomerId() < 1) {
+                throw new BadRequestException("Customer id is invalid");
+            }
+            customerRepository.findById(request.getCustomerId()).ifPresent(order::setCustomer);
         }
 
+        order.setSubtotal(BigDecimal.ZERO);
+        order.setDiscount(BigDecimal.ZERO);
+        order.setTotal(BigDecimal.ZERO);
         table.setStatus(TableStatus.occupied);
         tableEntityRepository.save(table);
 
         ShopOrder saved = shopOrderRepository.save(order);
+        if (request.getItems() != null && !request.getItems().isEmpty()) {
+            for (OrderItemUpsertRequest line : request.getItems()) {
+                if (line.getMenuItemId() == null) {
+                    throw new BadRequestException("Menu item id is required on order line");
+                }
+                if (line.getQuantity() == null || line.getQuantity() < 1) {
+                    throw new BadRequestException("Quantity must be at least 1");
+                }
+                MenuItem menuItem = menuItemRepository.findById(line.getMenuItemId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Menu item not found"));
+                if (Boolean.FALSE.equals(menuItem.getIsAvailable())) {
+                    throw new BadRequestException("Menu item is not available");
+                }
+                OrderItem item = new OrderItem();
+                item.setOrder(saved);
+                item.setMenuItem(menuItem);
+                item.setQuantity(line.getQuantity());
+                item.setUnitPrice(menuItem.getPrice());
+                item.setNote(line.getNote());
+                orderItemRepository.save(item);
+            }
+            saved = recalculateAndSave(saved);
+        }
         auditLogService.log(username, "ORDER_CREATE", "orders", saved.getId(),
                 java.util.Map.of("tableId", saved.getTable().getId()));
         return toResponse(saved);
     }
 
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByStatus(OrderStatus status) {
         List<ShopOrder> orders = status == null
                 ? shopOrderRepository.findAll()
@@ -83,6 +122,7 @@ public class OrderService {
         return orders.stream().map(this::toResponse).toList();
     }
 
+    @Transactional(readOnly = true)
     public OrderResponse getOrderById(Integer orderId) {
         ShopOrder order = findOrder(orderId);
         return toResponse(order);

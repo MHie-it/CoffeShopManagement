@@ -12,45 +12,77 @@
     <div class="main-wrap">
       <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
       <main class="content">
+        <div class="card" style="margin-bottom:1.25rem">
+          <form id="adminReportFilterForm" style="display:grid;gap:0.75rem">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0.75rem">
+              <label class="form-row">
+                <span>Từ ngày</span>
+                <input id="adminReportFromDate" type="date" required>
+              </label>
+              <label class="form-row">
+                <span>Đến ngày</span>
+                <input id="adminReportToDate" type="date" required>
+              </label>
+              <label class="form-row">
+                <span>Tháng</span>
+                <input id="adminReportMonth" type="month" required>
+              </label>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+              <button type="submit" class="btn btn-primary">Lọc dữ liệu</button>
+              <button id="adminExportCsvBtn" type="button" class="btn btn-ghost">Xuất CSV</button>
+            </div>
+            <p id="adminReportMessage" class="form-inline-message" aria-live="polite"></p>
+          </form>
+        </div>
+
         <div class="grid grid-4" style="margin-bottom:1.25rem">
           <div class="card stat-card">
             <div class="label">Doanh thu hôm nay</div>
-            <div class="value">12,4M ₫</div>
-            <div class="delta">+8% so với hôm qua</div>
+            <div id="adminTodayRevenue" class="value">0 ₫</div>
+            <div id="adminTodayDiscount" class="delta">Giảm giá: 0 ₫</div>
           </div>
           <div class="card stat-card">
-            <div class="label">Đơn hoàn thành</div>
-            <div class="value">186</div>
-            <div class="delta">Ước tính — nối API</div>
+            <div class="label">Đơn hôm nay</div>
+            <div id="adminTodayOrders" class="value">0</div>
+            <div class="delta">Theo báo cáo ngày</div>
+          </div>
+          <div class="card stat-card">
+            <div class="label">Doanh thu tháng</div>
+            <div id="adminMonthRevenue" class="value">0 ₫</div>
+            <div id="adminMonthOrders" class="delta">0 đơn trong tháng</div>
           </div>
           <div class="card stat-card">
             <div class="label">TB giá trị đơn</div>
-            <div class="value">67k</div>
-            <div class="delta">Theo ngày</div>
-          </div>
-          <div class="card stat-card">
-            <div class="label">Giờ cao điểm</div>
-            <div class="value">17–19h</div>
-            <div class="delta">Heatmap sau</div>
+            <div id="adminMonthAvgOrder" class="value">0 ₫</div>
+            <div class="delta">Theo tháng chọn</div>
           </div>
         </div>
         <div class="grid grid-2">
           <div class="card">
-            <h2>Biểu đồ doanh thu</h2>
-            <p class="muted" style="margin-bottom:1rem">Chart.js / ECharts khi có dữ liệu API.</p>
-            <div class="chart-placeholder">Khu vực biểu đồ (placeholder)</div>
-            <div style="margin-top:1rem;display:flex;gap:0.5rem;flex-wrap:wrap">
-              <button type="button" class="btn btn-primary">Xuất Excel</button>
-              <button type="button" class="btn btn-ghost">Xuất PDF</button>
+            <h2 style="margin-top:0">Top món bán chạy</h2>
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>Tên món</th>
+                    <th>SL bán</th>
+                    <th>Doanh thu</th>
+                  </tr>
+                </thead>
+                <tbody id="adminTopItemsBody">
+                  <tr><td colspan="3" class="muted">Đang tải dữ liệu...</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
           <div class="card">
-            <h2>Tóm tắt nhanh</h2>
-            <p class="muted">Module admin: RBAC và nhật ký nằm ở menu bên trái.</p>
+            <h2 style="margin-top:0">Tóm tắt nhanh</h2>
+            <p class="muted">Chỉ số được lấy từ API báo cáo và cập nhật theo bộ lọc.</p>
             <ul style="margin:0;padding-left:1.2rem;color:var(--muted);line-height:1.7;font-size:0.92rem">
-              <li>Lọc theo ngày / chi nhánh</li>
-              <li>So sánh tuần / tháng</li>
-              <li>Xuất báo cáo cho kế toán</li>
+              <li>Daily report: doanh thu, giảm giá, số đơn, avg.</li>
+              <li>Monthly report: doanh thu và số đơn theo tháng.</li>
+              <li>Top menu items: doanh số theo khoảng ngày.</li>
             </ul>
           </div>
         </div>

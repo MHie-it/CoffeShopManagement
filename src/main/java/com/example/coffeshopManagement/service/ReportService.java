@@ -5,9 +5,11 @@ import com.example.coffeshopManagement.dto.report.TopMenuItemResponse;
 import com.example.coffeshopManagement.entity.OrderItem;
 import com.example.coffeshopManagement.entity.OrderStatus;
 import com.example.coffeshopManagement.entity.ShopOrder;
+import com.example.coffeshopManagement.exception.BadRequestException;
 import com.example.coffeshopManagement.repository.OrderItemRepository;
 import com.example.coffeshopManagement.repository.ShopOrderRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,13 +28,18 @@ public class ReportService {
         this.orderItemRepository = orderItemRepository;
     }
 
+    @Transactional(readOnly = true)
     public SalesSummaryResponse summaryByDate(LocalDate date) {
         Instant from = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant to = date.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().minusMillis(1);
         return summaryByRange(from, to);
     }
 
+    @Transactional(readOnly = true)
     public SalesSummaryResponse summaryByMonth(int year, int month) {
+        if (year < 2000 || month < 1 || month > 12) {
+            throw new BadRequestException("Year or month is invalid");
+        }
         LocalDate first = LocalDate.of(year, month, 1);
         LocalDate next = first.plusMonths(1);
         Instant from = first.atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -40,6 +47,7 @@ public class ReportService {
         return summaryByRange(from, to);
     }
 
+    @Transactional(readOnly = true)
     public List<TopMenuItemResponse> topMenuItems(Instant from, Instant to, int limit) {
         List<ShopOrder> orders = shopOrderRepository.findByStatusAndCreatedAtBetween(OrderStatus.done, from, to);
         Map<Integer, TopAccumulator> map = new HashMap<>();
@@ -69,6 +77,7 @@ public class ReportService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public String exportSalesCsv(Instant from, Instant to) {
         SalesSummaryResponse summary = summaryByRange(from, to);
         List<TopMenuItemResponse> topItems = topMenuItems(from, to, 20);

@@ -24,6 +24,7 @@
             <p class="muted">Đang tải danh sách món...</p>
           </div>
         </div>
+        <p id="menuActionMessage" class="form-inline-message" style="margin-top:0.85rem" aria-live="polite"></p>
 
         <div id="categoryModal" class="modal" hidden>
           <div class="modal-backdrop" data-close-modal></div>
@@ -84,6 +85,51 @@
               <div class="modal-actions">
                 <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
                 <button type="submit" class="btn btn-primary">Lưu món</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="menuItemUpdateModal" class="modal" hidden>
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="menuItemUpdateTitle">
+            <div class="modal-head">
+              <h3 id="menuItemUpdateTitle">Cập nhật món</h3>
+              <button type="button" class="modal-close" data-close-modal aria-label="Đóng">×</button>
+            </div>
+            <form id="menuItemUpdateForm" class="modal-form">
+              <input id="menuItemUpdateId" type="hidden" />
+              <label class="form-row">
+                <span>Tên món</span>
+                <input id="menuItemUpdateName" required maxlength="150" />
+              </label>
+              <label class="form-row">
+                <span>Danh mục</span>
+                <select id="menuItemUpdateCategory" required></select>
+              </label>
+              <label class="form-row">
+                <span>Giá bán</span>
+                <input id="menuItemUpdatePrice" type="number" step="1000" min="0" required />
+              </label>
+              <label class="form-row">
+                <span>Mô tả</span>
+                <input id="menuItemUpdateDescription" maxlength="255" />
+              </label>
+              <label class="form-row">
+                <span>Ảnh URL</span>
+                <input id="menuItemUpdateImage" maxlength="500" />
+              </label>
+              <label class="form-row">
+                <span>Trạng thái</span>
+                <select id="menuItemUpdateIsAvailable">
+                  <option value="true">Đang bán</option>
+                  <option value="false">Tạm ngưng</option>
+                </select>
+              </label>
+              <p id="menuItemUpdateMessage" class="form-inline-message" aria-live="polite"></p>
+              <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
               </div>
             </form>
           </div>

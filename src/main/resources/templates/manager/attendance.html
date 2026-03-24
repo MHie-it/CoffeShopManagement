@@ -12,55 +12,86 @@
     <div class="main-wrap">
       <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
       <main class="content">
+        <div class="card" style="margin-bottom:1.25rem">
+          <form id="attendanceFilterForm" style="display:grid;gap:0.75rem">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0.75rem">
+              <label class="form-row">
+                <span>Từ ngày</span>
+                <input id="attendanceFromDate" type="date" required>
+              </label>
+              <label class="form-row">
+                <span>Đến ngày</span>
+                <input id="attendanceToDate" type="date" required>
+              </label>
+              <label class="form-row">
+                <span>SĐT nhân viên (tùy chọn)</span>
+                <input id="attendancePhoneFilter" maxlength="15" placeholder="09xxxxxxxx">
+              </label>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+              <button type="submit" class="btn btn-primary">Lọc báo cáo</button>
+              <button id="attendanceTodayBtn" type="button" class="btn btn-ghost">Dữ liệu hôm nay</button>
+            </div>
+            <p id="attendanceFilterMessage" class="form-inline-message" aria-live="polite"></p>
+          </form>
+        </div>
+
         <div class="grid grid-3" style="margin-bottom:1.25rem">
           <div class="card stat-card">
             <div class="label">Tổng giờ tháng</div>
-            <div class="value">1.248h</div>
-            <div class="delta">Toàn quán (demo)</div>
+            <div id="attendanceTotalHours" class="value">0h</div>
+            <div class="delta">Tổng giờ từ dữ liệu lọc</div>
           </div>
           <div class="card stat-card">
-            <div class="label">Đi muộn</div>
-            <div class="value">6</div>
-            <div class="delta" style="color:var(--warning)">Cần xem xét</div>
+            <div class="label">Số lượt chấm công</div>
+            <div id="attendanceRecordCount" class="value">0</div>
+            <div class="delta">Theo bộ lọc hiện tại</div>
           </div>
           <div class="card stat-card">
-            <div class="label">Vắng có phép</div>
-            <div class="value">2</div>
-            <div class="delta">Tháng 3</div>
+            <div class="label">Tổng lương ước tính</div>
+            <div id="attendancePayrollTotal" class="value">0 ₫</div>
+            <div class="delta">Theo API payroll summary</div>
           </div>
         </div>
-        <div class="card" style="padding:0;overflow:hidden">
-          <div class="table-wrap">
-            <table class="data">
-              <thead>
-                <tr>
-                  <th>Nhân viên</th>
-                  <th>Ngày</th>
-                  <th>Vào</th>
-                  <th>Ra</th>
-                  <th>Giờ làm</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Lê An</td>
-                  <td>22/03/2025</td>
-                  <td>07:02</td>
-                  <td>15:10</td>
-                  <td>8h 08p</td>
-                </tr>
-                <tr>
-                  <td>Phạm Hải</td>
-                  <td>22/03/2025</td>
-                  <td>14:55</td>
-                  <td>22:03</td>
-                  <td>7h 08p</td>
-                </tr>
-              </tbody>
-            </table>
+
+        <div class="grid grid-2">
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>Nhân viên</th>
+                    <th>Ngày</th>
+                    <th>Vào</th>
+                    <th>Ra</th>
+                    <th>Giờ làm</th>
+                  </tr>
+                </thead>
+                <tbody id="attendanceReportBody">
+                  <tr><td colspan="5" class="muted">Đang tải dữ liệu...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>Nhân viên</th>
+                    <th>Tổng giờ</th>
+                    <th>Lương giờ</th>
+                    <th>Lương</th>
+                  </tr>
+                </thead>
+                <tbody id="attendancePayrollBody">
+                  <tr><td colspan="4" class="muted">Đang tải dữ liệu lương...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-        <p class="muted" style="margin-top:1rem;font-size:0.88rem">Nguồn: entity <code style="background:var(--surface-2);padding:0.1rem 0.35rem;border-radius:4px">Attendance</code>.</p>
       </main>
     </div>
   </div>

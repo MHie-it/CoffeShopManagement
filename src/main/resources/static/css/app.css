@@ -695,6 +695,10 @@ body.modal-open {
   padding: 1rem;
 }
 
+.modal[hidden] {
+  display: none !important;
+}
+
 .modal-backdrop {
   position: absolute;
   inset: 0;

@@ -18,6 +18,7 @@
             <p id="lowStockSummary" class="muted" style="margin:0">Đang tải dữ liệu tồn kho...</p>
           </div>
           <div class="card" style="display:flex;align-items:center;justify-content:flex-end;gap:0.5rem">
+            <button type="button" class="btn btn-ghost" data-open-modal="ingredientCreateModal">+ Nguyên liệu</button>
             <button type="button" class="btn btn-ghost" data-open-modal="inventoryHistoryModal">Lịch sử nhập</button>
             <button type="button" class="btn btn-primary" data-open-modal="inventoryReceiptModal">+ Phiếu nhập</button>
           </div>
@@ -75,6 +76,39 @@
               <div class="modal-actions">
                 <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
                 <button type="submit" class="btn btn-primary">Lưu phiếu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="ingredientCreateModal" class="modal" hidden>
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="ingredientCreateTitle">
+            <div class="modal-head">
+              <h3 id="ingredientCreateTitle">Thêm nguyên liệu mới</h3>
+              <button type="button" class="modal-close" data-close-modal aria-label="Đóng">×</button>
+            </div>
+            <form id="ingredientCreateForm" class="modal-form">
+              <label class="form-row">
+                <span>Tên nguyên liệu</span>
+                <input id="ingredientName" maxlength="100" required placeholder="Hạt cà phê Arabica" />
+              </label>
+              <label class="form-row">
+                <span>Đơn vị</span>
+                <input id="ingredientUnit" maxlength="20" required placeholder="kg / lít / chai" />
+              </label>
+              <label class="form-row">
+                <span>Tồn ban đầu</span>
+                <input id="ingredientStockQuantity" type="number" min="0" step="0.01" required placeholder="10" />
+              </label>
+              <label class="form-row">
+                <span>Ngưỡng tối thiểu</span>
+                <input id="ingredientMinThreshold" type="number" min="0" step="0.01" required placeholder="2" />
+              </label>
+              <p id="ingredientCreateMessage" class="form-inline-message" aria-live="polite"></p>
+              <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu nguyên liệu</button>
               </div>
             </form>
           </div>

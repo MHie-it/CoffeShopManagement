@@ -32,6 +32,11 @@ public class MenuApiController {
         return ResponseEntity.ok(menuApiService.getAllMenuItems());
     }
 
+    @GetMapping("/api/manager/menu-items")
+    public ResponseEntity<List<MenuItemResponse>> getMenuItemsForManager() {
+        return ResponseEntity.ok(menuApiService.getAllMenuItems());
+    }
+
     @PostMapping("/api/manager/menu-items")
     public ResponseEntity<MenuItemResponse> createMenuItem(@Valid @RequestBody MenuItemCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(menuApiService.createMenuItem(request));
@@ -52,6 +57,11 @@ public class MenuApiController {
 
     @GetMapping("/api/staff/categories")
     public ResponseEntity<List<CategoryResponse>> getCategories() {
+        return ResponseEntity.ok(menuApiService.getAllCategories());
+    }
+
+    @GetMapping("/api/manager/categories")
+    public ResponseEntity<List<CategoryResponse>> getCategoriesForManager() {
         return ResponseEntity.ok(menuApiService.getAllCategories());
     }
 

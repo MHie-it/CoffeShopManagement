@@ -14,44 +14,91 @@
       <main class="content">
         <div class="card" style="margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;justify-content:space-between">
           <p class="muted" style="margin:0">Quản lý tài khoản: tạo, khóa, gán vai trò.</p>
-          <button type="button" class="btn btn-primary">+ Tài khoản mới</button>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <button type="button" class="btn btn-ghost" data-open-modal="adminRoleCreateModal">+ Role</button>
+            <button type="button" class="btn btn-primary" data-open-modal="adminUserCreateModal">+ Tài khoản mới</button>
+          </div>
         </div>
         <div class="card" style="padding:0;overflow:hidden">
           <div class="table-wrap">
             <table class="data">
               <thead>
                 <tr>
+                  <th>Username</th>
                   <th>Họ tên</th>
                   <th>Email</th>
                   <th>Vai trò</th>
                   <th>Trạng thái</th>
-                  <th></th>
+                  <th>Thao tác</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Nguyễn Minh</td>
-                  <td>minh@demo.local</td>
-                  <td>Admin</td>
-                  <td><span style="color:var(--success);font-weight:600">Hoạt động</span></td>
-                  <td><a href="#">Sửa</a></td>
-                </tr>
-                <tr>
-                  <td>Trần Lan</td>
-                  <td>lan@demo.local</td>
-                  <td>Quản lý</td>
-                  <td><span style="color:var(--success);font-weight:600">Hoạt động</span></td>
-                  <td><a href="#">Sửa</a></td>
-                </tr>
-                <tr>
-                  <td>Lê An</td>
-                  <td>an@demo.local</td>
-                  <td>Nhân viên</td>
-                  <td><span style="color:var(--muted)">Đã khóa</span></td>
-                  <td><a href="#">Mở khóa</a></td>
-                </tr>
+              <tbody id="adminUsersBody">
+                <tr><td colspan="6" class="muted">Đang tải danh sách tài khoản...</td></tr>
               </tbody>
             </table>
+          </div>
+        </div>
+        <p id="adminUsersMessage" class="form-inline-message" style="margin-top:0.75rem" aria-live="polite"></p>
+
+        <div id="adminRoleCreateModal" class="modal" hidden>
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="adminRoleCreateTitle">
+            <div class="modal-head">
+              <h3 id="adminRoleCreateTitle">Tạo role mới</h3>
+              <button type="button" class="modal-close" data-close-modal aria-label="Đóng">×</button>
+            </div>
+            <form id="adminRoleCreateForm" class="modal-form">
+              <label class="form-row">
+                <span>Tên role</span>
+                <input id="adminRoleName" maxlength="50" placeholder="ROLE_CASHIER" required>
+              </label>
+              <p id="adminRoleCreateMessage" class="form-inline-message" aria-live="polite"></p>
+              <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
+                <button type="submit" class="btn btn-primary">Tạo role</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="adminUserCreateModal" class="modal" hidden>
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="adminUserCreateTitle">
+            <div class="modal-head">
+              <h3 id="adminUserCreateTitle">Tạo tài khoản mới</h3>
+              <button type="button" class="modal-close" data-close-modal aria-label="Đóng">×</button>
+            </div>
+            <form id="adminUserCreateForm" class="modal-form">
+              <label class="form-row">
+                <span>Username</span>
+                <input id="adminUserCreateUsername" required maxlength="50">
+              </label>
+              <label class="form-row">
+                <span>Họ và tên</span>
+                <input id="adminUserCreateFullName" required maxlength="100">
+              </label>
+              <label class="form-row">
+                <span>Email</span>
+                <input id="adminUserCreateEmail" type="email" required maxlength="100">
+              </label>
+              <label class="form-row">
+                <span>Số điện thoại</span>
+                <input id="adminUserCreatePhone" required maxlength="15">
+              </label>
+              <label class="form-row">
+                <span>Mật khẩu</span>
+                <input id="adminUserCreatePassword" type="password" required minlength="6">
+              </label>
+              <label class="form-row">
+                <span>Role mặc định sau tạo</span>
+                <select id="adminUserCreateRole"></select>
+              </label>
+              <p id="adminUserCreateMessage" class="form-inline-message" aria-live="polite"></p>
+              <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
+                <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+              </div>
+            </form>
           </div>
         </div>
       </main>

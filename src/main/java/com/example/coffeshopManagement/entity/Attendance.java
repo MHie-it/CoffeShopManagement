@@ -27,6 +27,10 @@ public class Attendance {
 	@JoinColumn(name = "employee_id", nullable = false)
 	private Employee employee;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+
 	@Column(name = "work_date", nullable = false)
 	private LocalDate workDate;
 
@@ -36,7 +40,7 @@ public class Attendance {
 	@Column(name = "check_out")
 	private LocalDateTime checkOut;
 
-	@Column(name = "hours_worked", precision = 4, scale = 2)
+	@Column(name = "hours_worked", precision = 4, scale = 2, insertable = false, updatable = false)
 	private BigDecimal hoursWorked;
 
 	@Column(columnDefinition = "TEXT")

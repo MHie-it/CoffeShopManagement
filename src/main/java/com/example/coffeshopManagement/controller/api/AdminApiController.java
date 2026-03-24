@@ -3,6 +3,7 @@ package com.example.coffeshopManagement.controller.api;
 import com.example.coffeshopManagement.dto.user.AssignRoleRequest;
 import com.example.coffeshopManagement.dto.user.RoleCreateRequest;
 import com.example.coffeshopManagement.dto.user.RoleResponse;
+import com.example.coffeshopManagement.dto.user.UserActiveUpdateRequest;
 import com.example.coffeshopManagement.dto.user.UserResponse;
 import com.example.coffeshopManagement.service.UserRoleService;
 import jakarta.validation.Valid;
@@ -45,5 +46,12 @@ public class AdminApiController {
             @PathVariable Integer userId,
             @Valid @RequestBody AssignRoleRequest request) {
         return ResponseEntity.ok(userRoleService.assignRole(userId, request.getRoleName()));
+    }
+
+    @PutMapping("/api/admin/users/{userId}/active")
+    public ResponseEntity<UserResponse> updateUserActive(
+            @PathVariable Integer userId,
+            @Valid @RequestBody UserActiveUpdateRequest request) {
+        return ResponseEntity.ok(userRoleService.updateUserActive(userId, request.getActive()));
     }
 }

@@ -13,23 +13,30 @@
       <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
       <main class="content">
         <div class="grid grid-2">
-          <div class="card" style="text-align:center;padding:2.5rem 1.5rem">
+          <div class="card" style="padding:2rem 1.5rem">
             <p class="muted" style="margin:0 0 0.5rem;font-size:0.85rem">Hôm nay</p>
-            <p style="font-family:var(--font-display);font-size:2.75rem;font-weight:600;margin:0;letter-spacing:-0.03em">07:42</p>
-            <p class="muted" style="margin:0.5rem 0 1.75rem">Check-in dự kiến 07:00</p>
-            <button type="button" class="btn btn-primary" style="padding:0.85rem 2rem;font-size:1rem">Chấm vào ca</button>
+            <p id="staffClockNow" style="font-family:var(--font-display);font-size:2.75rem;font-weight:600;margin:0;letter-spacing:-0.03em">--:--</p>
+            <p id="staffClockDate" class="muted" style="margin:0.5rem 0 1rem">Đang tải...</p>
+            <form id="staffClockForm" style="display:grid;gap:0.75rem">
+              <div class="form-group" style="margin:0">
+                <label for="staffClockPhone">Số điện thoại nhân viên</label>
+                <input id="staffClockPhone" type="text" maxlength="15" placeholder="09xxxxxxxx" required>
+              </div>
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                <button id="staffCheckInBtn" type="button" class="btn btn-primary">Check-in</button>
+                <button id="staffCheckOutBtn" type="button" class="btn btn-ghost">Check-out</button>
+              </div>
+              <p id="staffClockMessage" class="form-inline-message" aria-live="polite"></p>
+            </form>
           </div>
           <div class="card">
             <h2 style="margin-top:0">Lịch sử hôm nay</h2>
-            <ul style="margin:0;padding:0;list-style:none;font-size:0.92rem;line-height:1.8;color:var(--muted)">
+            <ul id="staffClockHistory" style="margin:0;padding:0;list-style:none;font-size:0.92rem;line-height:1.8;color:var(--muted)">
               <li style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:0.5rem 0">
-                <span>Vào ca</span><span style="color:var(--ink);font-weight:600">—</span>
-              </li>
-              <li style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:0.5rem 0">
-                <span>Ra ca</span><span style="color:var(--ink);font-weight:600">—</span>
+                <span>Chưa có dữ liệu</span><span style="color:var(--ink);font-weight:600">—</span>
               </li>
             </ul>
-            <p class="muted" style="margin-top:1rem;font-size:0.85rem">Ghi nhận vào <code style="background:var(--surface-2);padding:0.1rem 0.35rem;border-radius:4px">Attendance</code>.</p>
+            <p class="muted" style="margin-top:1rem;font-size:0.85rem">Dữ liệu được cập nhật từ API chấm công.</p>
           </div>
         </div>
       </main>

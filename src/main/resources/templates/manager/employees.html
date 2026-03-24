@@ -13,7 +13,7 @@
       <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
       <main class="content">
         <div class="card" style="margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:space-between;align-items:center">
-          <p class="muted" style="margin:0">Hồ sơ, lương, ca làm — bảng demo.</p>
+          <p class="muted" style="margin:0">Hồ sơ, lương, ca làm nhân viên.</p>
           <button type="button" class="btn btn-primary" data-open-modal="employeeCreateModal">+ Nhân viên</button>
         </div>
         <div class="card" style="padding:0;overflow:hidden">
@@ -25,7 +25,8 @@
                   <th>SĐT</th>
                   <th>Ca chính</th>
                   <th>Lương cơ bản</th>
-                  <th></th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody id="employeeTableBody">
@@ -69,6 +70,51 @@
               <div class="modal-actions">
                 <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
                 <button type="submit" class="btn btn-primary">Lưu nhân viên</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="employeeUpdateModal" class="modal" hidden>
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="employeeUpdateTitle">
+            <div class="modal-head">
+              <h3 id="employeeUpdateTitle">Cập nhật nhân viên</h3>
+              <button type="button" class="modal-close" data-close-modal aria-label="Đóng">×</button>
+            </div>
+            <form id="employeeUpdateForm" class="modal-form">
+              <input id="employeeUpdateId" type="hidden" />
+              <label class="form-row">
+                <span>Họ tên</span>
+                <input id="employeeUpdateFullName" maxlength="100" />
+              </label>
+              <label class="form-row">
+                <span>Số điện thoại</span>
+                <input id="employeeUpdatePhone" maxlength="15" />
+              </label>
+              <label class="form-row">
+                <span>Vị trí</span>
+                <input id="employeeUpdatePosition" maxlength="50" />
+              </label>
+              <label class="form-row">
+                <span>Mã ca</span>
+                <input id="employeeUpdateShiftCode" maxlength="20" />
+              </label>
+              <label class="form-row">
+                <span>Lương giờ</span>
+                <input id="employeeUpdateHourlyRate" type="number" min="0" step="1000" />
+              </label>
+              <label class="form-row">
+                <span>Trạng thái</span>
+                <select id="employeeUpdateIsActive">
+                  <option value="true">Đang hoạt động</option>
+                  <option value="false">Ngừng hoạt động</option>
+                </select>
+              </label>
+              <p id="employeeUpdateMessage" class="form-inline-message" aria-live="polite"></p>
+              <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu cập nhật</button>
               </div>
             </form>
           </div>

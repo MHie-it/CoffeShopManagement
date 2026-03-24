@@ -2,6 +2,7 @@ package com.example.coffeshopManagement.controller.api;
 
 import com.example.coffeshopManagement.dto.report.SalesSummaryResponse;
 import com.example.coffeshopManagement.dto.report.TopMenuItemResponse;
+import com.example.coffeshopManagement.exception.BadRequestException;
 import com.example.coffeshopManagement.service.ReportService;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +43,9 @@ public class ReportApiController {
             @RequestParam LocalDate fromDate,
             @RequestParam LocalDate toDate,
             @RequestParam(defaultValue = "10") int limit) {
+        if (fromDate.isAfter(toDate)) {
+            throw new BadRequestException("fromDate must be before or equal to toDate");
+        }
         Instant from = fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant to = toDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().minusMillis(1);
         return ResponseEntity.ok(reportService.topMenuItems(from, to, limit));
@@ -51,6 +55,9 @@ public class ReportApiController {
     public ResponseEntity<byte[]> exportSalesCsv(
             @RequestParam LocalDate fromDate,
             @RequestParam LocalDate toDate) {
+        if (fromDate.isAfter(toDate)) {
+            throw new BadRequestException("fromDate must be before or equal to toDate");
+        }
         Instant from = fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant to = toDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().minusMillis(1);
         byte[] body = reportService.exportSalesCsv(from, to).getBytes(StandardCharsets.UTF_8);

@@ -56,6 +56,13 @@ public class UserRoleService {
         return userRepository.findAll().stream().map(this::toUserResponse).toList();
     }
 
+    public UserResponse updateUserActive(Integer userId, Boolean active) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setActive(Boolean.TRUE.equals(active));
+        return toUserResponse(userRepository.save(user));
+    }
+
     private RoleResponse toRoleResponse(Role role) {
         RoleResponse response = new RoleResponse();
         response.setId(role.getId());

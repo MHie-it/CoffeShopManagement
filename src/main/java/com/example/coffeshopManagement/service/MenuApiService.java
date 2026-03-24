@@ -6,10 +6,13 @@ import com.example.coffeshopManagement.dto.menu.MenuItemCreateRequest;
 import com.example.coffeshopManagement.dto.menu.MenuItemResponse;
 import com.example.coffeshopManagement.entity.Category;
 import com.example.coffeshopManagement.entity.MenuItem;
+import com.example.coffeshopManagement.exception.BadRequestException;
 import com.example.coffeshopManagement.exception.ResourceNotFoundException;
 import com.example.coffeshopManagement.repository.CategoryRepository;
 import com.example.coffeshopManagement.repository.MenuItemRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,10 +26,14 @@ public class MenuApiService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<MenuItemResponse> getAllMenuItems() {
-        return menuItemRepository.findAll().stream().map(this::toMenuItemResponse).toList();
+        return menuItemRepository.findAllWithCategory().stream()
+                .map(this::toMenuItemResponse)
+                .toList();
     }
 
+    @Transactional
     public MenuItemResponse createMenuItem(MenuItemCreateRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
@@ -41,6 +48,7 @@ public class MenuApiService {
         return toMenuItemResponse(menuItemRepository.save(item));
     }
 
+    @Transactional
     public MenuItemResponse updateMenuItem(Integer id, MenuItemCreateRequest request) {
         MenuItem item = menuItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu item not found"));
@@ -57,20 +65,35 @@ public class MenuApiService {
         return toMenuItemResponse(menuItemRepository.save(item));
     }
 
+    @Transactional
     public void deleteMenuItem(Integer id) {
         if (!menuItemRepository.existsById(id)) {
             throw new ResourceNotFoundException("Menu item not found");
         }
-        menuItemRepository.deleteById(id);
+        try {
+            menuItemRepository.deleteById(id);
+            menuItemRepository.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new BadRequestException("Cannot delete menu item that is already used in orders");
+        }
     }
 
+    @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll().stream().map(this::toCategoryResponse).toList();
     }
 
+    @Transactional
     public CategoryResponse createCategory(CategoryCreateRequest request) {
+        String categoryName = request.getName() == null ? "" : request.getName().trim();
+        if (categoryName.isEmpty()) {
+            throw new BadRequestException("Category name is required");
+        }
+        if (categoryRepository.existsByNameIgnoreCase(categoryName)) {
+            throw new BadRequestException("Category already exists");
+        }
         Category category = new Category();
-        category.setName(request.getName());
+        category.setName(categoryName);
         category.setSortOrder(request.getSortOrder() == null ? 0 : request.getSortOrder());
         category.setIsActive(request.getIsActive() == null ? Boolean.TRUE : request.getIsActive());
         return toCategoryResponse(categoryRepository.save(category));

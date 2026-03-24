@@ -7,8 +7,10 @@ import com.example.coffeshopManagement.exception.ResourceNotFoundException;
 import com.example.coffeshopManagement.repository.AuditLogRepository;
 import com.example.coffeshopManagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -35,29 +37,38 @@ public class AuditLogService {
         auditLogRepository.save(log);
     }
 
+    @Transactional(readOnly = true)
     public List<AuditLogResponse> search(Instant from, Instant to, String action, String username) {
-        List<AuditLog> logs;
-        if (from != null && to != null) {
-            logs = auditLogRepository.findByCreatedAtBetween(from, to);
-        } else if (action != null && !action.isBlank()) {
-            logs = auditLogRepository.findByActionContainingIgnoreCase(action);
-        } else if (username != null && !username.isBlank()) {
-            logs = auditLogRepository.findByUserUsername(username);
-        } else {
-            logs = auditLogRepository.findAll();
-        }
-        return logs.stream().map(this::toResponse).toList();
+        String actionFilter = action == null ? "" : action.trim().toLowerCase();
+        String usernameFilter = username == null ? "" : username.trim().toLowerCase();
+
+        return auditLogRepository.findAll().stream()
+                .filter(log -> from == null || (log.getCreatedAt() != null && !log.getCreatedAt().isBefore(from)))
+                .filter(log -> to == null || (log.getCreatedAt() != null && !log.getCreatedAt().isAfter(to)))
+                .filter(log -> actionFilter.isBlank() || containsIgnoreCase(log.getAction(), actionFilter))
+                .filter(log -> usernameFilter.isBlank()
+                        || (log.getUser() != null && containsIgnoreCase(log.getUser().getUsername(), usernameFilter)))
+                .sorted(Comparator.comparing(AuditLog::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .map(this::toResponse)
+                .toList();
     }
 
     private AuditLogResponse toResponse(AuditLog log) {
         AuditLogResponse response = new AuditLogResponse();
         response.setId(log.getId());
-        response.setUsername(log.getUser().getUsername());
+        response.setUsername(log.getUser() == null ? "unknown" : log.getUser().getUsername());
         response.setAction(log.getAction());
         response.setTableName(log.getTableName());
         response.setRecordId(log.getRecordId());
         response.setDetail(log.getDetail());
         response.setCreatedAt(log.getCreatedAt());
         return response;
+    }
+
+    private boolean containsIgnoreCase(String value, String keywordLowerCase) {
+        if (value == null || keywordLowerCase == null) {
+            return false;
+        }
+        return value.toLowerCase().contains(keywordLowerCase);
     }
 }

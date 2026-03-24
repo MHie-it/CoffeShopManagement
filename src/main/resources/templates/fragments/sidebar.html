@@ -25,6 +25,9 @@
     </nav>
     <nav class="sidebar-nav" th:if="${role == 'MANAGER'}">
       <div class="nav-section-label">Quản lý</div>
+      <a th:href="@{/manager}" th:classappend="${navActive == 'dashboard'} ? 'active'">
+        <span class="icon">◈</span> Tổng quan
+      </a>
       <a th:href="@{/manager/inventory}" th:classappend="${navActive == 'inventory'} ? 'active'">
         <span class="icon">▣</span> Nhập hàng &amp; tồn kho
       </a>

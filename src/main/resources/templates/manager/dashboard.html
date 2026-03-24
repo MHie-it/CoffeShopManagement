@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}">
+  <title>Quản lý</title>
+</head>
+
+<body>
+  <div class="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar(${role}, ${navActive})}"></aside>
+    <div class="main-wrap">
+      <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
+      <main class="content">
+        <div class="grid grid-4" style="margin-bottom:1.25rem">
+          <div class="card stat-card">
+            <div class="label">Đơn đang phục vụ</div>
+            <div id="managerServingOrdersValue" class="value">--</div>
+            <div class="delta">Theo thời điểm hiện tại</div>
+          </div>
+          <div class="card stat-card">
+            <div class="label">Nhân sự trong ca</div>
+            <div id="managerActiveEmployeesValue" class="value">--</div>
+            <div class="delta">Nhân viên đang hoạt động</div>
+          </div>
+          <div class="card stat-card">
+            <div class="label">Món bán chạy</div>
+            <div id="managerTopMenuItemValue" class="value">--</div>
+            <div class="delta">Theo đơn hoàn tất hôm nay</div>
+          </div>
+          <div class="card stat-card">
+            <div class="label">Cảnh báo kho</div>
+            <div id="managerLowStockValue" class="value">--</div>
+            <div class="delta">Nguyên liệu dưới ngưỡng</div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h2 style="margin-top:0">Điều phối nhanh</h2>
+            <p class="muted" style="margin-bottom:1rem">Lối tắt cho các module vận hành thường dùng.</p>
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+              <a class="btn btn-primary" th:href="@{/manager/inventory}">Quản lý kho</a>
+              <a class="btn btn-ghost" th:href="@{/manager/employees}">Nhân viên</a>
+              <a class="btn btn-ghost" th:href="@{/manager/attendance}">Chấm công</a>
+              <a class="btn btn-ghost" th:href="@{/manager/menu}">Menu</a>
+              <a class="btn btn-ghost" th:href="@{/manager/tables}">Sơ đồ bàn</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 style="margin-top:0">Nhắc việc trong ngày</h2>
+            <ul style="margin:0;padding-left:1.2rem;color:var(--muted);line-height:1.75;font-size:0.92rem">
+              <li>Kiểm tra nguyên liệu dưới ngưỡng và tạo phiếu nhập.</li>
+              <li>Xác nhận nhân viên check-in đủ theo ca.</li>
+              <li>Rà soát món tạm hết để ẩn khỏi màn hình gọi món.</li>
+              <li>Kiểm tra tình trạng bàn trước khung giờ cao điểm.</li>
+            </ul>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

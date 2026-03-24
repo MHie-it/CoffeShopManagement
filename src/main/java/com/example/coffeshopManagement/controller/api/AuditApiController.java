@@ -1,6 +1,7 @@
 package com.example.coffeshopManagement.controller.api;
 
 import com.example.coffeshopManagement.dto.audit.AuditLogResponse;
+import com.example.coffeshopManagement.exception.BadRequestException;
 import com.example.coffeshopManagement.service.AuditLogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,9 @@ public class AuditApiController {
             @RequestParam(required = false) Instant to,
             @RequestParam(required = false) String action,
             @RequestParam(required = false) String username) {
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new BadRequestException("from must be before or equal to to");
+        }
         return ResponseEntity.ok(auditLogService.search(from, to, action, username));
     }
 }

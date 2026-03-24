@@ -12,4 +12,5 @@ import java.util.List;
 public interface ShopOrderRepository extends JpaRepository<ShopOrder, Integer> {
     List<ShopOrder> findByStatus(OrderStatus status);
     List<ShopOrder> findByStatusAndCreatedAtBetween(OrderStatus status, Instant from, Instant to);
+    boolean existsByTableIdAndStatusIn(Integer tableId, List<OrderStatus> statuses);
 }

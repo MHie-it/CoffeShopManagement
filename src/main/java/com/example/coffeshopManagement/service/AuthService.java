@@ -74,8 +74,11 @@ public class AuthService {
         user.setFullName(fullName);
         user.setEmail(email);
         user.setPhone(phone);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        user.setPassword(encodedPassword);
+        user.setLegacyPassword(encodedPassword);
         user.setActive(true);
+        user.setRoleId(staffRole.getId());
         Set<Role> roles = new HashSet<>();
         roles.add(staffRole);
         user.setRoles(roles);
