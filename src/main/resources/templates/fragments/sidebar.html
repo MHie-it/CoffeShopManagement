@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <aside th:fragment="sidebar (role, navActive)" class="sidebar">
+    <div class="sidebar-brand">
+      <a th:href="@{/}">
+        <span class="sidebar-logo">C</span>
+        <span class="sidebar-brand-text">
+          <span class="name">CaféGay</span>
+          <span class="tag" th:text="${role == 'ADMIN'} ? 'Quản trị' : (${role == 'MANAGER'} ? 'Vận hành' : 'Phục vụ')">Vai trò</span>
+        </span>
+      </a>
+    </div>
+    <nav class="sidebar-nav" th:if="${role == 'ADMIN'}">
+      <div class="nav-section-label">Admin</div>
+      <a th:href="@{/admin}" th:classappend="${navActive == 'revenue'} ? 'active'">
+        <span class="icon">◆</span> Thống kê doanh thu
+      </a>
+      <a th:href="@{/admin/users}" th:classappend="${navActive == 'users'} ? 'active'">
+        <span class="icon">◇</span> Phân quyền &amp; tài khoản
+      </a>
+      <a th:href="@{/admin/audit}" th:classappend="${navActive == 'audit'} ? 'active'">
+        <span class="icon">◎</span> Nhật ký hệ thống
+      </a>
+    </nav>
+    <nav class="sidebar-nav" th:if="${role == 'MANAGER'}">
+      <div class="nav-section-label">Quản lý</div>
+      <a th:href="@{/manager/inventory}" th:classappend="${navActive == 'inventory'} ? 'active'">
+        <span class="icon">▣</span> Nhập hàng &amp; tồn kho
+      </a>
+      <a th:href="@{/manager/employees}" th:classappend="${navActive == 'employees'} ? 'active'">
+        <span class="icon">▤</span> Nhân viên
+      </a>
+      <a th:href="@{/manager/attendance}" th:classappend="${navActive == 'attendance'} ? 'active'">
+        <span class="icon">◷</span> Báo cáo chấm công
+      </a>
+      <a th:href="@{/manager/menu}" th:classappend="${navActive == 'menu'} ? 'active'">
+        <span class="icon">☰</span> Quản lý menu
+      </a>
+      <a th:href="@{/manager/tables}" th:classappend="${navActive == 'tables'} ? 'active'">
+        <span class="icon">▦</span> Sơ đồ bàn
+      </a>
+    </nav>
+    <nav class="sidebar-nav" th:if="${role == 'STAFF'}">
+      <div class="nav-section-label">Nhân viên</div>
+      <a th:href="@{/staff/clock}" th:classappend="${navActive == 'clock'} ? 'active'">
+        <span class="icon">◐</span> Chấm công
+      </a>
+      <a th:href="@{/staff/orders}" th:classappend="${navActive == 'orders'} ? 'active'">
+        <span class="icon">☕</span> Đơn theo bàn
+      </a>
+      <a th:href="@{/staff/members}" th:classappend="${navActive == 'members'} ? 'active'">
+        <span class="icon">✦</span> Khách hàng thành viên
+      </a>
+      <a th:href="@{/staff/payment}" th:classappend="${navActive == 'payment'} ? 'active'">
+        <span class="icon">▤</span> Thanh toán MoMo
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a th:href="@{/}">← Về trang chủ</a>
+      <form th:action="@{/logout}" method="post" style="margin-top:0.5rem">
+        <button type="submit" class="btn btn-ghost" style="width:100%;justify-content:flex-start">Đăng xuất</button>
+      </form>
+    </div>
+  </aside>
+</body>
+</html>

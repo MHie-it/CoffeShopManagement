@@ -2,6 +2,7 @@ package com.example.coffeshopManagement.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class AuthRegisterRequest {
@@ -14,6 +15,10 @@ public class AuthRegisterRequest {
     private String password;
 
     @NotBlank
+    @Size(min = 6, max = 100)
+    private String confirmPassword;
+
+    @NotBlank
     @Size(max = 100)
     private String fullName;
 
@@ -21,6 +26,11 @@ public class AuthRegisterRequest {
     @Email
     @Size(max = 100)
     private String email;
+
+    @NotBlank
+    @Pattern(regexp = "^(\\+84|0)\\d{9,10}$", message = "Phone number must be a valid Vietnam format")
+    @Size(max = 20)
+    private String phone;
 
     public String getUsername() {
         return username;
@@ -52,5 +62,21 @@ public class AuthRegisterRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

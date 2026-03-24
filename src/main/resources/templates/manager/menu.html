@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}">
+  <title>Quản lý</title>
+</head>
+
+<body>
+  <div class="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar(${role}, ${navActive})}"></aside>
+    <div class="main-wrap">
+      <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
+      <main class="content">
+        <div class="card" style="margin-bottom:1.25rem;display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:space-between;align-items:center">
+          <p class="muted" style="margin:0">Danh mục, giá, ảnh món — CRUD khi có API.</p>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <button type="button" class="btn btn-ghost" data-open-modal="categoryModal">Danh mục</button>
+            <button type="button" class="btn btn-primary" data-open-modal="menuItemModal">+ Món mới</button>
+          </div>
+        </div>
+        <div id="menuCards" class="grid grid-3">
+          <div class="card">
+            <p class="muted">Đang tải danh sách món...</p>
+          </div>
+        </div>
+
+        <div id="categoryModal" class="modal" hidden>
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="categoryModalTitle">
+            <div class="modal-head">
+              <h3 id="categoryModalTitle">Danh mục món</h3>
+              <button type="button" class="modal-close" data-close-modal aria-label="Đóng">×</button>
+            </div>
+            <div id="categoryList" class="stack-list">
+              <p class="muted">Đang tải danh mục...</p>
+            </div>
+            <form id="categoryCreateForm" class="modal-form" style="margin-top:0.85rem">
+              <label class="form-row">
+                <span>Tên danh mục</span>
+                <input id="categoryName" required maxlength="100" placeholder="Ví dụ: Cà phê máy" />
+              </label>
+              <label class="form-row">
+                <span>Thứ tự</span>
+                <input id="categorySortOrder" type="number" step="1" min="0" placeholder="0" />
+              </label>
+              <p id="categoryCreateMessage" class="form-inline-message" aria-live="polite"></p>
+              <div class="modal-actions">
+                <button type="submit" class="btn btn-primary">Thêm danh mục</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="menuItemModal" class="modal" hidden>
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="menuItemModalTitle">
+            <div class="modal-head">
+              <h3 id="menuItemModalTitle">Thêm món mới</h3>
+              <button type="button" class="modal-close" data-close-modal aria-label="Đóng">×</button>
+            </div>
+            <form id="menuItemCreateForm" class="modal-form">
+              <label class="form-row">
+                <span>Tên món</span>
+                <input id="menuItemName" required maxlength="150" />
+              </label>
+              <label class="form-row">
+                <span>Danh mục</span>
+                <select id="menuItemCategory" required></select>
+              </label>
+              <label class="form-row">
+                <span>Giá bán</span>
+                <input id="menuItemPrice" type="number" step="1000" min="0" required placeholder="39000" />
+              </label>
+              <label class="form-row">
+                <span>Mô tả</span>
+                <input id="menuItemDescription" maxlength="255" placeholder="Mô tả ngắn" />
+              </label>
+              <label class="form-row">
+                <span>Ảnh URL</span>
+                <input id="menuItemImage" maxlength="500" placeholder="https://..." />
+              </label>
+              <p id="menuItemCreateMessage" class="form-inline-message" aria-live="polite"></p>
+              <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu món</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

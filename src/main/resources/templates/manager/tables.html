@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}">
+  <title>Quản lý</title>
+</head>
+
+<body>
+  <div class="sidebar-backdrop"></div>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/sidebar :: sidebar(${role}, ${navActive})}"></aside>
+    <div class="main-wrap">
+      <header th:replace="~{fragments/topbar :: topbar(${roleLabel})}"></header>
+      <main class="content">
+        <div class="grid grid-2" style="margin-bottom:1.25rem">
+          <div class="card">
+            <h2 style="margin-top:0">Sơ đồ khu vực</h2>
+            <p class="muted">Ô lưới trạng thái bàn.</p>
+            <div style="display:flex;gap:1.25rem;margin-top:1rem;font-size:0.85rem;flex-wrap:wrap">
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--success);margin-right:0.35rem"></span>Trống</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent);margin-right:0.35rem"></span>Đang phục vụ</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--muted);margin-right:0.35rem"></span>Đã đặt</span>
+            </div>
+          </div>
+          <div class="card" style="display:flex;align-items:center;justify-content:flex-end">
+            <button type="button" class="btn btn-primary" data-open-modal="tableCreateModal">+ Thêm bàn</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2 style="margin-top:0">Tầng trệt</h2>
+          <div id="tableFloorGrid" class="table-floor" style="max-width:520px">
+            <div class="table-tile" style="opacity:0.7">Đang tải<span>...</span></div>
+          </div>
+        </div>
+
+        <div id="tableCreateModal" class="modal" hidden>
+          <div class="modal-backdrop" data-close-modal></div>
+          <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="tableCreateTitle">
+            <div class="modal-head">
+              <h3 id="tableCreateTitle">Thêm bàn mới</h3>
+              <button type="button" class="modal-close" data-close-modal aria-label="Đóng">×</button>
+            </div>
+            <form id="tableCreateForm" class="modal-form">
+              <label class="form-row">
+                <span>Tên bàn</span>
+                <input id="tableName" required maxlength="20" placeholder="B5" />
+              </label>
+              <label class="form-row">
+                <span>Sức chứa</span>
+                <input id="tableCapacity" type="number" min="1" step="1" placeholder="4" />
+              </label>
+              <label class="form-row">
+                <span>Trạng thái</span>
+                <select id="tableStatus">
+                  <option value="empty">Trống</option>
+                  <option value="occupied">Đang phục vụ</option>
+                  <option value="reserved">Đã đặt</option>
+                </select>
+              </label>
+              <label class="form-row">
+                <span>Ghi chú</span>
+                <input id="tableNote" maxlength="255" placeholder="Khu cửa sổ" />
+              </label>
+              <p id="tableCreateMessage" class="form-inline-message" aria-live="polite"></p>
+              <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu bàn</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

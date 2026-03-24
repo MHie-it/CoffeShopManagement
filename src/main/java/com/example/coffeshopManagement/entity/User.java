@@ -21,6 +21,9 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false, unique = true, length = 20)
+    private String phone;
     
     @Column(nullable = false)
     private boolean active = true;
@@ -49,6 +52,9 @@ public class User {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }

@@ -44,11 +44,23 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(AuthRegisterRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
+        String username = request.getUsername().trim();
+        String email = request.getEmail().trim().toLowerCase();
+        String fullName = request.getFullName().trim();
+        String phone = request.getPhone().trim();
+
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new BadRequestException("Password confirmation does not match");
+        }
+
+        if (userRepository.existsByUsername(username)) {
             throw new BadRequestException("Username is already taken");
         }
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(email)) {
             throw new BadRequestException("Email is already taken");
+        }
+        if (userRepository.existsByPhone(phone)) {
+            throw new BadRequestException("Phone number is already taken");
         }
 
         Role staffRole = roleRepository.findByName("ROLE_STAFF").orElseGet(() -> {
@@ -58,9 +70,10 @@ public class AuthService {
         });
 
         User user = new User();
-        user.setUsername(request.getUsername());
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
+        user.setUsername(username);
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPhone(phone);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setActive(true);
         Set<Role> roles = new HashSet<>();
