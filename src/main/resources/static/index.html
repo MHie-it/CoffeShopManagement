@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coffee Shop Management</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <section id="login-view" class="card">
+        <h1>Coffee Shop Management</h1>
+        <p class="muted">Dang nhap de su dung he thong</p>
+        <form id="login-form">
+          <label for="usernameOrEmail">Username hoac Email</label>
+          <input id="usernameOrEmail" name="usernameOrEmail" required />
+
+          <label for="password">Mat khau</label>
+          <input id="password" name="password" type="password" required />
+
+          <button type="submit">Dang nhap</button>
+        </form>
+        <p id="login-error" class="error hidden"></p>
+        <p class="muted auth-switch">
+          Chua co tai khoan?
+          <a id="show-register-link" href="#">Dang ky</a>
+        </p>
+      </section>
+
+      <section id="register-view" class="card hidden">
+        <h1>Tao tai khoan</h1>
+        <p class="muted">Tai khoan moi se duoc gan role STAFF</p>
+        <form id="register-form">
+          <label for="register-username">Username</label>
+          <input id="register-username" name="username" required />
+
+          <label for="register-fullName">Ho va ten</label>
+          <input id="register-fullName" name="fullName" required />
+
+          <label for="register-email">Email</label>
+          <input id="register-email" name="email" type="email" required />
+
+          <label for="register-password">Mat khau</label>
+          <input id="register-password" name="password" type="password" required />
+
+          <button type="submit">Dang ky</button>
+        </form>
+        <p id="register-error" class="error hidden"></p>
+        <p id="register-success" class="success hidden"></p>
+        <p class="muted auth-switch">
+          Da co tai khoan?
+          <a id="show-login-link" href="#">Dang nhap</a>
+        </p>
+      </section>
+
+      <section id="dashboard-view" class="hidden">
+        <header class="topbar">
+          <div>
+            <h2>Coffee Shop Dashboard</h2>
+            <p id="welcome-text" class="muted"></p>
+          </div>
+          <button id="logout-btn" class="secondary">Dang xuat</button>
+        </header>
+
+        <div class="layout">
+          <aside class="sidebar">
+            <h3>Menu</h3>
+            <nav id="menu-nav"></nav>
+          </aside>
+
+          <main class="content">
+            <section id="page-pos" class="page hidden">
+              <h3>POS</h3>
+              <div class="grid">
+                <div class="card">
+                  <h4>Danh sach ban</h4>
+                  <ul id="table-list"></ul>
+                </div>
+                <div class="card">
+                  <h4>Danh sach mon</h4>
+                  <ul id="menu-item-list"></ul>
+                </div>
+              </div>
+            </section>
+
+            <section id="page-dynamic" class="page hidden">
+              <h3 id="dynamic-page-title"></h3>
+              <p id="dynamic-page-description" class="muted"></p>
+              <div id="dynamic-page-content"></div>
+            </section>
+
+            <section id="page-placeholder" class="page hidden">
+              <h3 id="placeholder-title"></h3>
+              <p id="placeholder-description" class="muted"></p>
+            </section>
+          </main>
+        </div>
+      </section>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
