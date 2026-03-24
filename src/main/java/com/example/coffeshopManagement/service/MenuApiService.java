@@ -10,6 +10,7 @@ import com.example.coffeshopManagement.exception.ResourceNotFoundException;
 import com.example.coffeshopManagement.repository.CategoryRepository;
 import com.example.coffeshopManagement.repository.MenuItemRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,10 +24,12 @@ public class MenuApiService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<MenuItemResponse> getAllMenuItems() {
         return menuItemRepository.findAll().stream().map(this::toMenuItemResponse).toList();
     }
 
+    @Transactional
     public MenuItemResponse createMenuItem(MenuItemCreateRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
@@ -41,6 +44,7 @@ public class MenuApiService {
         return toMenuItemResponse(menuItemRepository.save(item));
     }
 
+    @Transactional
     public MenuItemResponse updateMenuItem(Integer id, MenuItemCreateRequest request) {
         MenuItem item = menuItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu item not found"));
@@ -57,6 +61,7 @@ public class MenuApiService {
         return toMenuItemResponse(menuItemRepository.save(item));
     }
 
+    @Transactional
     public void deleteMenuItem(Integer id) {
         if (!menuItemRepository.existsById(id)) {
             throw new ResourceNotFoundException("Menu item not found");
@@ -64,10 +69,12 @@ public class MenuApiService {
         menuItemRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll().stream().map(this::toCategoryResponse).toList();
     }
 
+    @Transactional
     public CategoryResponse createCategory(CategoryCreateRequest request) {
         Category category = new Category();
         category.setName(request.getName());

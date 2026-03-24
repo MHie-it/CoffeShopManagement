@@ -5,6 +5,8 @@ import com.example.coffeshopManagement.entity.*;
 import com.example.coffeshopManagement.exception.BadRequestException;
 import com.example.coffeshopManagement.exception.ResourceNotFoundException;
 import com.example.coffeshopManagement.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,8 @@ import java.util.List;
 
 @Service
 public class OrderService {
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+
     private final ShopOrderRepository shopOrderRepository;
     private final OrderItemRepository orderItemRepository;
     private final TableEntityRepository tableEntityRepository;
@@ -26,6 +30,7 @@ public class OrderService {
     private final VoucherRepository voucherRepository;
     private final PointLogRepository pointLogRepository;
     private final AuditLogService auditLogService;
+    private final MomoGatewayService momoGatewayService;
 
     public OrderService(
             ShopOrderRepository shopOrderRepository,
@@ -37,7 +42,8 @@ public class OrderService {
             PaymentRepository paymentRepository,
             VoucherRepository voucherRepository,
             PointLogRepository pointLogRepository,
-            AuditLogService auditLogService) {
+            AuditLogService auditLogService,
+            MomoGatewayService momoGatewayService) {
         this.shopOrderRepository = shopOrderRepository;
         this.orderItemRepository = orderItemRepository;
         this.tableEntityRepository = tableEntityRepository;
@@ -48,6 +54,7 @@ public class OrderService {
         this.voucherRepository = voucherRepository;
         this.pointLogRepository = pointLogRepository;
         this.auditLogService = auditLogService;
+        this.momoGatewayService = momoGatewayService;
     }
 
     @Transactional
@@ -76,6 +83,7 @@ public class OrderService {
         return toResponse(saved);
     }
 
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByStatus(OrderStatus status) {
         List<ShopOrder> orders = status == null
                 ? shopOrderRepository.findAll()
@@ -83,6 +91,7 @@ public class OrderService {
         return orders.stream().map(this::toResponse).toList();
     }
 
+    @Transactional(readOnly = true)
     public OrderResponse getOrderById(Integer orderId) {
         ShopOrder order = findOrder(orderId);
         return toResponse(order);
@@ -179,53 +188,18 @@ public class OrderService {
             throw new BadRequestException("Cannot checkout empty order");
         }
 
-        BigDecimal subtotal = calculateSubtotal(items);
-        BigDecimal discount = BigDecimal.ZERO;
-        Voucher usedVoucher = null;
-
-        if (request.getVoucherCode() != null && !request.getVoucherCode().isBlank()) {
-            Voucher voucher = voucherRepository.findByCode(request.getVoucherCode())
-                    .orElseThrow(() -> new ResourceNotFoundException("Voucher not found"));
-            validateVoucherForOrder(voucher, order);
-            discount = computeDiscount(subtotal, voucher);
-            usedVoucher = voucher;
-        }
-
-        if (discount.compareTo(subtotal) > 0) {
-            discount = subtotal;
-        }
-
-        BigDecimal total = subtotal.subtract(discount);
-
-        order.setVoucher(usedVoucher);
-        order.setSubtotal(subtotal);
-        order.setDiscount(discount);
-        order.setTotal(total);
-        order.setStatus(OrderStatus.done);
-        shopOrderRepository.save(order);
-
-        if (usedVoucher != null) {
-            usedVoucher.setIsUsed(Boolean.TRUE);
-            voucherRepository.save(usedVoucher);
-        }
+        CheckoutAmount checkoutAmount = calculateCheckoutAmount(order, items, request.getVoucherCode());
 
         Payment payment = new Payment();
         payment.setOrder(order);
         payment.setMethod(request.getPaymentMethod());
-        payment.setAmount(total);
+        payment.setAmount(checkoutAmount.total());
         payment.setStatus(PaymentStatus.success);
         payment.setMomoRef(request.getMomoRef());
         payment.setPaidAt(Instant.now());
         paymentRepository.save(payment);
 
-        TableEntity table = order.getTable();
-        table.setStatus(TableStatus.empty);
-        tableEntityRepository.save(table);
-
-        addPointsIfEligible(order, total);
-        String actor = order.getUser() == null ? "unknown" : order.getUser().getUsername();
-        auditLogService.log(actor, "ORDER_CHECKOUT", "orders", order.getId(),
-                java.util.Map.of("paymentMethod", request.getPaymentMethod().name(), "total", total.toString()));
+        completePaidOrder(order, checkoutAmount, request.getPaymentMethod().name());
 
         PaymentResponse response = new PaymentResponse();
         response.setPaymentId(payment.getId());
@@ -235,6 +209,119 @@ public class OrderService {
         response.setAmount(payment.getAmount());
         response.setPaidAt(payment.getPaidAt());
         return response;
+    }
+
+    @Transactional
+    public MomoCreatePaymentResponse createMomoPayment(Integer orderId, MomoCreatePaymentRequest request) {
+        ShopOrder order = findOrder(orderId);
+        ensureEditable(order);
+        ensureNotPaid(orderId);
+
+        List<OrderItem> items = orderItemRepository.findByOrderId(orderId);
+        if (items.isEmpty()) {
+            throw new BadRequestException("Cannot checkout empty order");
+        }
+
+        CheckoutAmount checkoutAmount = calculateCheckoutAmount(order, items, request.getVoucherCode());
+        String momoOrderId = "ORDER-" + orderId + "-" + System.currentTimeMillis();
+        String orderInfo = request.getOrderInfo();
+        if (orderInfo == null || orderInfo.isBlank()) {
+            orderInfo = "Thanh toan don #" + orderId;
+        }
+
+        MomoGatewayService.MomoCreateResult result =
+                momoGatewayService.createPayment(momoOrderId, checkoutAmount.total(), orderInfo);
+        log.info(
+                "MoMo payment created: orderId={}, momoOrderId={}, amount={}",
+                orderId,
+                result.getMomoOrderId(),
+                checkoutAmount.total());
+
+        Payment payment = paymentRepository.findByOrderId(orderId).orElseGet(Payment::new);
+        payment.setOrder(order);
+        payment.setMethod(PaymentMethod.momo);
+        payment.setAmount(checkoutAmount.total());
+        payment.setStatus(PaymentStatus.pending);
+        payment.setMomoRef(result.getMomoOrderId());
+        payment.setPaidAt(null);
+        Payment savedPayment = paymentRepository.save(payment);
+
+        order.setVoucher(checkoutAmount.usedVoucher());
+        order.setSubtotal(checkoutAmount.subtotal());
+        order.setDiscount(checkoutAmount.discount());
+        order.setTotal(checkoutAmount.total());
+        shopOrderRepository.save(order);
+
+        MomoCreatePaymentResponse response = new MomoCreatePaymentResponse();
+        response.setPaymentId(savedPayment.getId());
+        response.setOrderId(orderId);
+        response.setAmount(checkoutAmount.total());
+        response.setMomoOrderId(result.getMomoOrderId());
+        response.setRequestId(result.getRequestId());
+        response.setPayUrl(result.getPayUrl());
+        response.setDeeplink(result.getDeeplink());
+        response.setQrCodeUrl(result.getQrCodeUrl());
+        return response;
+    }
+
+    @Transactional
+    public void handleMomoCallback(java.util.Map<String, String> callbackParams) {
+        log.info(
+                "MoMo callback received: orderId={}, requestId={}, resultCode={}, transId={}",
+                callbackParams.getOrDefault("orderId", ""),
+                callbackParams.getOrDefault("requestId", ""),
+                callbackParams.getOrDefault("resultCode", ""),
+                callbackParams.getOrDefault("transId", ""));
+        boolean signatureOk = momoGatewayService.verifyCallbackSignature(callbackParams);
+        if (!signatureOk) {
+            throw new BadRequestException("Invalid MoMo callback signature");
+        }
+
+        String momoOrderId = callbackParams.get("orderId");
+        if (momoOrderId == null || momoOrderId.isBlank()) {
+            throw new BadRequestException("Missing MoMo orderId");
+        }
+
+        Payment payment = paymentRepository.findByMomoRef(momoOrderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found for MoMo order"));
+
+        if (payment.getStatus() == PaymentStatus.success) {
+            return;
+        }
+
+        int resultCode;
+        try {
+            resultCode = Integer.parseInt(callbackParams.getOrDefault("resultCode", "-1"));
+        } catch (NumberFormatException ex) {
+            resultCode = -1;
+        }
+
+        if (resultCode != 0) {
+            payment.setStatus(PaymentStatus.failed);
+            paymentRepository.save(payment);
+            log.warn(
+                    "MoMo callback payment failed: orderId={}, momoOrderId={}, resultCode={}",
+                    payment.getOrder().getId(),
+                    momoOrderId,
+                    resultCode);
+            return;
+        }
+
+        payment.setStatus(PaymentStatus.success);
+        payment.setPaidAt(Instant.now());
+        paymentRepository.save(payment);
+        log.info(
+                "MoMo callback payment success: orderId={}, momoOrderId={}",
+                payment.getOrder().getId(),
+                momoOrderId);
+
+        ShopOrder order = payment.getOrder();
+        CheckoutAmount checkoutAmount = new CheckoutAmount(
+                order.getSubtotal(),
+                order.getDiscount(),
+                payment.getAmount(),
+                order.getVoucher());
+        completePaidOrder(order, checkoutAmount, PaymentMethod.momo.name());
     }
 
     private void addPointsIfEligible(ShopOrder order, BigDecimal total) {
@@ -271,6 +358,53 @@ public class OrderService {
         if (!voucher.getCustomer().getId().equals(order.getCustomer().getId())) {
             throw new BadRequestException("Voucher does not belong to this customer");
         }
+    }
+
+    private CheckoutAmount calculateCheckoutAmount(ShopOrder order, List<OrderItem> items, String voucherCode) {
+        BigDecimal subtotal = calculateSubtotal(items);
+        BigDecimal discount = BigDecimal.ZERO;
+        Voucher usedVoucher = order.getVoucher();
+
+        if (voucherCode != null && !voucherCode.isBlank()) {
+            Voucher voucher = voucherRepository.findByCode(voucherCode)
+                    .orElseThrow(() -> new ResourceNotFoundException("Voucher not found"));
+            validateVoucherForOrder(voucher, order);
+            discount = computeDiscount(subtotal, voucher);
+            usedVoucher = voucher;
+        } else if (usedVoucher != null) {
+            validateVoucherForOrder(usedVoucher, order);
+            discount = computeDiscount(subtotal, usedVoucher);
+        }
+
+        if (discount.compareTo(subtotal) > 0) {
+            discount = subtotal;
+        }
+        BigDecimal total = subtotal.subtract(discount);
+        return new CheckoutAmount(subtotal, discount, total, usedVoucher);
+    }
+
+    private void completePaidOrder(ShopOrder order, CheckoutAmount checkoutAmount, String paymentMethod) {
+        order.setVoucher(checkoutAmount.usedVoucher());
+        order.setSubtotal(checkoutAmount.subtotal());
+        order.setDiscount(checkoutAmount.discount());
+        order.setTotal(checkoutAmount.total());
+        order.setStatus(OrderStatus.done);
+        shopOrderRepository.save(order);
+
+        Voucher usedVoucher = checkoutAmount.usedVoucher();
+        if (usedVoucher != null && !Boolean.TRUE.equals(usedVoucher.getIsUsed())) {
+            usedVoucher.setIsUsed(Boolean.TRUE);
+            voucherRepository.save(usedVoucher);
+        }
+
+        TableEntity table = order.getTable();
+        table.setStatus(TableStatus.empty);
+        tableEntityRepository.save(table);
+
+        addPointsIfEligible(order, checkoutAmount.total());
+        String actor = order.getUser() == null ? "unknown" : order.getUser().getUsername();
+        auditLogService.log(actor, "ORDER_CHECKOUT", "orders", order.getId(),
+                java.util.Map.of("paymentMethod", paymentMethod, "total", checkoutAmount.total().toString()));
     }
 
     private BigDecimal computeDiscount(BigDecimal subtotal, Voucher voucher) {
@@ -310,6 +444,9 @@ public class OrderService {
             subtotal = subtotal.add(line);
         }
         return subtotal;
+    }
+
+    private record CheckoutAmount(BigDecimal subtotal, BigDecimal discount, BigDecimal total, Voucher usedVoucher) {
     }
 
     private ShopOrder findOrder(Integer orderId) {
