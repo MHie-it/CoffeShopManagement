@@ -16,7 +16,10 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional(readOnly = true)
 public class ReportService {
     private final ShopOrderRepository shopOrderRepository;
     private final OrderItemRepository orderItemRepository;

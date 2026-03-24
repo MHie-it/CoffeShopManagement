@@ -21,7 +21,10 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional(readOnly = true)
 public class InvoiceService {
     private final ShopOrderRepository shopOrderRepository;
     private final OrderItemRepository orderItemRepository;
