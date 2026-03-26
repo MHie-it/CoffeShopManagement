@@ -81,6 +81,14 @@ public class OrderApiController {
         return ResponseEntity.ok(orderService.checkout(orderId, request));
     }
 
+    @PostMapping("/api/staff/orders/{orderId}/checkout/momo")
+    public ResponseEntity<MomoCreatePaymentResponse> createMomoPayment(
+            @PathVariable Integer orderId,
+            @RequestBody(required = false) MomoCreatePaymentRequest request) {
+        MomoCreatePaymentRequest safeRequest = request == null ? new MomoCreatePaymentRequest() : request;
+        return ResponseEntity.ok(orderService.createMomoPayment(orderId, safeRequest));
+    }
+
     @GetMapping("/api/staff/orders/{orderId}/invoice/pdf")
     public ResponseEntity<ByteArrayResource> printInvoice(@PathVariable Integer orderId) {
         byte[] pdf = invoiceService.generateInvoicePdf(orderId);
